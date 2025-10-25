@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
-  title: 'Colorfy – Beautiful Websites, Your Colors',
+  title: 'Colorfy - Beautiful Websites, Your Colors',
   description: 'Build stunning websites with colors that match your brand.'
 };
 
