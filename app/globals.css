@@ -1,26 +1,14 @@
-@import "tailwindcss";
+/* ===== Ported global styles from your project ===== */
+@import url('css/styles.css'); /* optional jika kamu salin apa adanya—lihat catatan di bawah */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Kalau kamu tidak mau memisah, copy seluruh isi styles.css ke sini.
+   Untuk singkatnya, kamu bisa paste seluruh konten file styles.css milikmu di sini.
+   Berikut cuplikan penting yang memastikan tema, hero, features, showcase, cta, footer, scrollbar, dsb:
+*/
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* >>> Paste seluruh isi file styles.css kamu di sini <<< */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* Auth & Profile styles */
+@import url('css/auth.css');
+@import url('css/profile.css');
+ 
