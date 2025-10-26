@@ -1,4 +1,4 @@
-import ClientEffects from './ClientEffects';
+import ClientEffects from '../components/ClientEffects';
 
 export default function HomePage() {
   return (
@@ -18,7 +18,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Preview/Spline + Palette */}
       <section className="preview-section" id="templates">
         <div className="preview-card">
           <div className="spline-bg">
@@ -61,7 +60,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features */}
       <section className="features" id="features">
         <div className="section-header">
           <h2>Everything You Need</h2>
@@ -101,7 +99,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How it works */}
       <section className="how-it-works" id="about">
         <div className="section-header">
           <h2>How It Works</h2>
@@ -114,7 +111,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="cta-section">
         <div className="cta-content">
           <h2>Ready to Create Your Website?</h2>
@@ -134,7 +130,7 @@ export default function HomePage() {
             <ul className="footer-links">
               <li><a href="#">Templates</a></li>
               <li><a href="#">Features</a></li>
-              <li><a href="#">Pricing</a></li>
+              <li><a href="#">Steps</a></li>
             </ul>
           </div>
           <div className="footer-column">

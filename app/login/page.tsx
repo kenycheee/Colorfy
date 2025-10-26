@@ -1,7 +1,7 @@
 'use client';
 
 import BackHome from '@/components/BackHome';
-import { showNotification } from '../ClientEffects';
+import { showNotification } from '../../components/ClientEffects';
 
 export default function LoginPage() {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
