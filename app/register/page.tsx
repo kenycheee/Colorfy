@@ -1,7 +1,7 @@
 'use client';
 
 import BackHome from '@/components/BackHome';
-import { showNotification } from '../ClientEffects';
+import { showNotification } from '../../components/ClientEffects';
 
 export default function RegisterPage() {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,7 +46,7 @@ export default function RegisterPage() {
           <label className="checkbox">
             <input type="checkbox" required /> <span>I agree to the Terms and Privacy Policy.</span>
           </label>
-          <div className="form-hint">For demo only. Don’t use a real password.</div>
+          <div className="form-hint">For demo only. Don't use a real password.</div>
 
           <button className="btn-primary" type="submit">Register</button>
         </form>

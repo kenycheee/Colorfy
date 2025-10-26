@@ -40,9 +40,9 @@ export default function Navbar() {
         Colorfy
       </div>
       <ul className="nav-links">
+        <li><a href="/templates">Templates</a></li>
         <li><a href="/#features">Features</a></li>
-        <li><a href="/#templates">Templates</a></li>
-        <li><a href="/#about">About Us</a></li>
+        <li><a href="/#about">Steps</a></li>
       </ul>
       <button className="cta-button" onClick={goGetStarted} id="getStartedBtn">Get Started</button>
     </nav>

@@ -46,9 +46,8 @@ body {
   background: var(--darker-bg);
 }
 
-/* Scroll offset for anchored sections (fixed navbar) */
 section[id] {
-  scroll-margin-top: calc(var(--nav-h) + 28px);
+  scroll-margin-top: calc(var(--nav-h) + 80px);
 }
 
 /* ============ 2) ANIMATIONS ============ */
@@ -128,7 +127,7 @@ section[id] {
   box-shadow: 0 0 30px rgba(139, 92, 246, .5); 
 }
 
-/* ============ 4) HERO (sampai 2 tombol saja) ============ */
+/* ============ 4) HERO ============ */
 
 .hero {
   min-height: 100dvh;
@@ -287,7 +286,7 @@ section[id] {
   width: 300px; 
   height: 300px; }
 
-/* ============ 5) SHOWCASE (setelah hero) ============ */
+/* ============ 5) SHOWCASE ============ */
 
 .showcase {
   padding: 4rem 5% 6rem;
@@ -880,7 +879,7 @@ footer {
     text-align: center;
 }
 
-/* ============ 10) SCROLLBAR (thematic) ============ */
+/* ============ 10) SCROLLBAR ============ */
 
 /* Chromium/WebKit */
 ::-webkit-scrollbar { 
