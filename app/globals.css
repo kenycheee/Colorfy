@@ -1,14 +1,5 @@
 /* ===== Ported global styles from your project ===== */
-@import url('css/styles.css'); /* optional jika kamu salin apa adanya—lihat catatan di bawah */
-
-/* Kalau kamu tidak mau memisah, copy seluruh isi styles.css ke sini.
-   Untuk singkatnya, kamu bisa paste seluruh konten file styles.css milikmu di sini.
-   Berikut cuplikan penting yang memastikan tema, hero, features, showcase, cta, footer, scrollbar, dsb:
-*/
-
-/* >>> Paste seluruh isi file styles.css kamu di sini <<< */
-
-/* Auth & Profile styles */
+@import url('css/styles.css'); 
 @import url('css/auth.css');
 @import url('css/profile.css');
- 
+@import url('css/templates.css');

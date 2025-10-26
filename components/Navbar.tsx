@@ -51,16 +51,6 @@ export default function Navbar() {
       </div>
 
       <ul className="nav-links">
-        <li><Link href="/">Home</Link></li>
-        <li><Link href="/search">Search</Link></li>
-        <li>
-          <Link
-            href={isLoggedIn ? '/profile' : '/login'}
-            className="text-slate-400 hover:text-cyan-300 transition-colors duration-200"
-          >
-            Profile
-          </Link>
-        </li>
       </ul>
     </nav>
   );

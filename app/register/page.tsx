@@ -1,11 +1,6 @@
 'use client';
 
 import BackHome from '@/components/BackHome';
-import { showNotification } from '../ClientEffects';
-import { useState } from 'react';
-import { auth, db } from '@/lib/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
@@ -83,7 +78,7 @@ export default function RegisterPage() {
           <label className="checkbox">
             <input type="checkbox" required /> <span>I agree to the Terms and Privacy Policy.</span>
           </label>
-          <div className="form-hint">For demo only. Don’t use a real password.</div>
+          <div className="form-hint">For demo only. Don't use a real password.</div>
 
           <button className="btn-primary" type="submit" disabled={loading}>
             {loading ? 'Registering...' : 'Register'}
