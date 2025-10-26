@@ -155,25 +155,46 @@
 }
 
 /* ==================== Back Button ==================== */
-.back-home{
+.back-home {
   position: fixed;
   top: calc(var(--nav-h) / 3);
   left: 24px;
   z-index: 3;
-  padding: .55rem .9rem;
+  overflow: hidden; /* penting biar efek ::before gak keluar dari tombol */
+  padding: 0.55rem 0.9rem;
   border-radius: 10px;
   font-weight: 700;
   text-decoration: none;
   color: #fff;
   background: linear-gradient(135deg, var(--cyan), var(--purple));
-  box-shadow: 0 10px 30px rgba(0,0,0,.25), 0 0 24px var(--accent-glow);
-  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), 0 0 24px var(--accent-glow);
+  transition: transform 0.25s cubic-bezier(.175, .885, .32, 1.275), box-shadow 0.25s;
+  position: fixed;
 }
-.back-home:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 16px 36px rgba(0,0,0,.3), 0 0 36px var(--accent-glow);
+
+/* ✨ efek shimmer cahaya (copy dari .btn-primary::before) */
+.back-home::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 -100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+  transition: left 0.5s;
 }
-.back-home:active{ transform: none; filter: brightness(.97); }
+
+/* ✨ efek hover sama persis dengan btn-primary */
+.back-home:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 0 40px var(--accent-glow), 0 15px 40px rgba(6,182,212,.4);
+}
+
+.back-home:hover::before {
+  left: 100%;
+}
+
+.back-home:active {
+  transform: none;
+  filter: brightness(0.97);
+}
 
 /* ==================== KEYFRAMES ==================== */
 @keyframes fadeInUp {

@@ -1,35 +1,56 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import BackHome from '@/components/BackHome';
+import { auth, db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function ProfilePage() {
-  const username = typeof window !== 'undefined' ? localStorage.getItem('username') : 'User';
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // 🔒 kalau belum login → redirect ke /login
+        router.push('/login');
+        return;
+      }
+
+      // ✅ kalau sudah login → ambil data user dari Firestore
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists()) setUserData(snap.data());
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  if (loading) return <p>Loading...</p>;
 
   return (
-    <section className="hero-profile">
+    <main className="auth-section" style={{ textAlign: 'center', color: 'white' }}>
       <BackHome />
-      <div className="hero-overlay"></div>
-      <div className="profile-container">
-        <div className="profile-card">
-          <div className="profile-avatar">
-            <img src="/favicon.ico" alt="Avatar" />
-          </div>
-          <h2 className="username">{username || 'User'}</h2>
-          <p className="user-tagline">Colors that match your brand, sites that don’t make your eyes cry.</p>
-          <div className="profile-actions">
-            <a className="btn-primary" href="/#features">Explore Features</a>
-            <button
-              className="btn-secondary"
-              onClick={() => {
-                localStorage.removeItem('loggedIn');
-                window.location.href = '/';
-              }}
-            >
-              Log out
-            </button>
-          </div>
+      <div className="auth-card">
+        <h1 className="auth-title">
+          Welcome, <span className="grad">{userData?.username}</span>
+        </h1>
+        <p className="auth-subtitle">{userData?.email}</p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
+          <button
+            className="btn-primary"
+            onClick={() => {
+              auth.signOut().then(() => router.push('/login'));
+            }}
+          >
+            Logout
+          </button>
         </div>
       </div>
-    </section>
+    </main>
   );
 }

@@ -1,27 +1,50 @@
 'use client';
 
 import BackHome from '@/components/BackHome';
-import { showNotification } from '../../components/ClientEffects';
 
 export default function RegisterPage() {
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+
     const f = new FormData(e.currentTarget);
     const user = String(f.get('username') || '').trim();
     const pass = String(f.get('password') || '').trim();
 
-    localStorage.setItem('username', user);
-    localStorage.setItem('password', pass);
-    showNotification('Account created!');
-    setTimeout(() => (window.location.href = '/login'), 1000);
+    try {
+      // 1️⃣ Daftarkan user ke Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, `${user}@demo.com`, pass);
+      const uid = userCredential.user.uid;
+
+      // 2️⃣ Simpan data tambahan ke Firestore
+      await setDoc(doc(db, 'users', uid), {
+        username: user,
+        email: `${user}@demo.com`,
+        createdAt: new Date().toISOString(),
+      });
+
+      showNotification('Account created successfully!');
+      setTimeout(() => (window.location.href = '/login'), 1200);
+    } catch (err: any) {
+      console.error(err);
+      showNotification(err.message || 'Registration failed!');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <section className="auth-section">
       <BackHome />
       <div className="auth-card">
-        <h1 className="auth-title">Create <span className="grad">Account</span></h1>
-        <p className="auth-subtitle">Join and start building beautiful websites in minutes. Your colors, your style.</p>
+        <h1 className="auth-title">
+          Create <span className="grad">Account</span>
+        </h1>
+        <p className="auth-subtitle">
+          Join and start building beautiful websites in minutes. Your colors, your style.
+        </p>
 
         <form className="auth-form" onSubmit={onSubmit} noValidate>
           <div className="input-group">
@@ -31,7 +54,14 @@ export default function RegisterPage() {
 
           <div className="input-group">
             <span className="icon">🔒</span>
-            <input className="input" id="reg-pass" type="password" name="password" placeholder="Password" required />
+            <input
+              className="input"
+              id="reg-pass"
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
             <button
               type="button"
               className="toggle-pass"
@@ -40,7 +70,9 @@ export default function RegisterPage() {
                 const inp = document.getElementById('reg-pass') as HTMLInputElement;
                 inp.type = inp.type === 'password' ? 'text' : 'password';
               }}
-            >👁️</button>
+            >
+              👁️
+            </button>
           </div>
 
           <label className="checkbox">
@@ -48,11 +80,15 @@ export default function RegisterPage() {
           </label>
           <div className="form-hint">For demo only. Don't use a real password.</div>
 
-          <button className="btn-primary" type="submit">Register</button>
+          <button className="btn-primary" type="submit" disabled={loading}>
+            {loading ? 'Registering...' : 'Register'}
+          </button>
         </form>
 
         <div className="divider">or</div>
-        <p className="auth-switch">Already have an account? <a href="/login">Login</a></p>
+        <p className="auth-switch">
+          Already have an account? <a href="/login">Login</a>
+        </p>
       </div>
     </section>
   );

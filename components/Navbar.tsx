@@ -1,20 +1,25 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function Navbar() {
   const navRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Hide on these routes
   const HIDE_ON = ['/login', '/register', '/profile'];
-  if (HIDE_ON.includes(pathname)) return null;
 
   useEffect(() => {
-    const nav = navRef.current!;
+    const nav = navRef.current;
+    if (!nav) return;
+
     const onScroll = () => {
-      const y = window.pageYOffset;
+      const y = window.scrollY;
       if (y > 100) {
         nav.style.background = 'rgba(10, 14, 39, 0.95)';
         nav.style.boxShadow = '0 10px 30px rgba(139, 92, 246, 0.1)';
@@ -28,10 +33,15 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const goGetStarted = () => {
-    const isLoggedIn = typeof window !== 'undefined' && localStorage.getItem('loggedIn');
-    window.location.href = isLoggedIn ? '/profile' : '/login';
-  };
+  // Cek login realtime
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsLoggedIn(!!user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (HIDE_ON.includes(pathname)) return null;
 
   return (
     <nav className="nav" ref={navRef}>
@@ -39,12 +49,9 @@ export default function Navbar() {
         <div className="logo-icon">🎨</div>
         Colorfy
       </div>
+
       <ul className="nav-links">
-        <li><a href="/templates">Templates</a></li>
-        <li><a href="/#features">Features</a></li>
-        <li><a href="/#about">Steps</a></li>
       </ul>
-      <button className="cta-button" onClick={goGetStarted} id="getStartedBtn">Get Started</button>
     </nav>
   );
 }
