@@ -2,22 +2,32 @@
 
 import BackHome from '@/components/BackHome';
 import { showNotification } from '../ClientEffects';
+import { useState } from 'react';
+import { auth } from '@/lib/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginPage() {
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+
     const f = new FormData(e.currentTarget);
     const user = String(f.get('username') || '').trim();
     const pass = String(f.get('password') || '').trim();
-    const storedUser = localStorage.getItem('username');
-    const storedPass = localStorage.getItem('password');
 
-    if (user === storedUser && pass === storedPass) {
-      localStorage.setItem('loggedIn', 'true');
+    try {
+      // Login ke Firebase Authentication
+      await signInWithEmailAndPassword(auth, `${user}@demo.com`, pass);
+
       showNotification(`Welcome back, ${user}!`);
       setTimeout(() => (window.location.href = '/profile'), 1200);
-    } else {
-      showNotification('⚠️ Incorrect username or password!');
+    } catch (err: any) {
+      console.error(err);
+      showNotification(err.message || '⚠️ Incorrect username or password!');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -25,18 +35,35 @@ export default function LoginPage() {
     <section className="auth-section">
       <BackHome />
       <div className="auth-card">
-        <h1 className="auth-title">Welcome <span className="grad">Back</span></h1>
-        <p className="auth-subtitle">Log in to continue your website projects with the color palettes you love.</p>
+        <h1 className="auth-title">
+          Welcome <span className="grad">Back</span>
+        </h1>
+        <p className="auth-subtitle">
+          Log in to continue your website projects with the color palettes you love.
+        </p>
 
         <form className="auth-form" onSubmit={onSubmit} noValidate>
           <div className="input-group">
             <span className="icon">👤</span>
-            <input className="input" type="text" name="username" placeholder="Username" required />
+            <input
+              className="input"
+              type="text"
+              name="username"
+              placeholder="Username"
+              required
+            />
           </div>
 
           <div className="input-group">
             <span className="icon">🔒</span>
-            <input className="input" id="login-pass" type="password" name="password" placeholder="Password" required />
+            <input
+              className="input"
+              id="login-pass"
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
             <button
               type="button"
               className="toggle-pass"
@@ -45,7 +72,9 @@ export default function LoginPage() {
                 const inp = document.getElementById('login-pass') as HTMLInputElement;
                 inp.type = inp.type === 'password' ? 'text' : 'password';
               }}
-            >👁️</button>
+            >
+              👁️
+            </button>
           </div>
 
           <div className="form-row">
@@ -55,11 +84,15 @@ export default function LoginPage() {
             <a href="#" aria-disabled="true">Forgot password?</a>
           </div>
 
-          <button className="btn-primary" type="submit">Login</button>
+          <button className="btn-primary" type="submit" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
         </form>
 
         <div className="divider">or</div>
-        <p className="auth-switch">Don't have an account? <a href="/register">Sign up</a></p>
+        <p className="auth-switch">
+          Don't have an account? <a href="/register">Sign up</a>
+        </p>
       </div>
     </section>
   );
