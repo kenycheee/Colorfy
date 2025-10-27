@@ -1,6 +1,25 @@
+'use client';
+
 import ClientEffects from '../components/ClientEffects';
+import { auth } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
+  const router = useRouter();
+
+  // Fungsi saat tombol ditekan
+  const handleStart = () => {
+    const user = auth.currentUser;
+
+    if (user) {
+      // ✅ Jika sudah login → ke templates
+      router.push('/templates');
+    } else {
+      // ⚠️ Jika belum login → ke login
+      router.push('/login');
+    }
+  };
+
   return (
     <>
       <section className="hero" id="home">
@@ -46,10 +65,18 @@ export default function HomePage() {
             </p>
 
             <div className="color-palette">
-              <div className="color-swatch" style={{ background: '#06B6D4' }}><div className="color-code">#06B6D4</div></div>
-              <div className="color-swatch" style={{ background: '#22D3EE' }}><div className="color-code">#22D3EE</div></div>
-              <div className="color-swatch" style={{ background: '#8B5CF6' }}><div className="color-code">#8B5CF6</div></div>
-              <div className="color-swatch" style={{ background: '#A78BFA' }}><div className="color-code">#A78BFA</div></div>
+              <div className="color-swatch" style={{ background: '#06B6D4' }}>
+                <div className="color-code">#06B6D4</div>
+              </div>
+              <div className="color-swatch" style={{ background: '#22D3EE' }}>
+                <div className="color-code">#22D3EE</div>
+              </div>
+              <div className="color-swatch" style={{ background: '#8B5CF6' }}>
+                <div className="color-code">#8B5CF6</div>
+              </div>
+              <div className="color-swatch" style={{ background: '#A78BFA' }}>
+                <div className="color-code">#A78BFA</div>
+              </div>
               <div className="color-swatch" style={{ background: 'linear-gradient(135deg, #06B6D4, #8B5CF6)' }}>
                 <div className="color-code">Gradient</div>
               </div>
@@ -105,17 +132,32 @@ export default function HomePage() {
           <p>Three simple steps to your perfect website</p>
         </div>
         <div className="steps">
-          <div className="step"><div className="step-number">1</div><h3>Choose a Template</h3><p>Browse our collection and select a template that matches your vision</p></div>
-          <div className="step"><div className="step-number">2</div><h3>Customize Colors</h3><p>Use our color picker to match your brand identity perfectly</p></div>
-          <div className="step"><div className="step-number">3</div><h3>Publish &amp; Share</h3><p>Launch your website with one click and share it with the world</p></div>
+          <div className="step">
+            <div className="step-number">1</div>
+            <h3>Choose a Template</h3>
+            <p>Browse our collection and select a template that matches your vision</p>
+          </div>
+          <div className="step">
+            <div className="step-number">2</div>
+            <h3>Customize Colors</h3>
+            <p>Use our color picker to match your brand identity perfectly</p>
+          </div>
+          <div className="step">
+            <div className="step-number">3</div>
+            <h3>Publish &amp; Share</h3>
+            <p>Launch your website with one click and share it with the world</p>
+          </div>
         </div>
       </section>
 
+      {/* CTA Button */}
       <section className="cta-section">
         <div className="cta-content">
           <h2>Ready to Create Your Website?</h2>
           <p>Join thousands of users who have already built beautiful websites with Colorfy</p>
-          <a href="/login" className="btn-white">Start Building for Free</a>
+          <button onClick={handleStart} className="btn-white">
+            Start Building for Free
+          </button>
         </div>
       </section>
 
@@ -142,7 +184,9 @@ export default function HomePage() {
             </ul>
           </div>
         </div>
-        <div className="footer-bottom"><p>© 2025 Colorfy. All rights reserved.</p></div>
+        <div className="footer-bottom">
+          <p>© 2025 Colorfy. All rights reserved.</p>
+        </div>
       </footer>
 
       <ClientEffects />
