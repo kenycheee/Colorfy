@@ -1,6 +1,10 @@
 'use client';
 
 import BackHome from '@/components/BackHome';
+import { showNotification } from '@/components/ClientEffects';
+import { useState } from 'react';
+import { auth } from '@/lib/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
