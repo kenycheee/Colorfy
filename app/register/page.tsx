@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import BackHome from '@/components/BackHome';
 
+// ✅ IMPORT FIREBASE DAN FUNGSI YANG DIPERLUKAN
+import { auth, db } from '@/lib/firebase'; // pastikan path ini sesuai dengan tempat kamu inisialisasi Firebase
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { setDoc, doc } from 'firebase/firestore';
+
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
@@ -26,11 +31,12 @@ export default function RegisterPage() {
         createdAt: new Date().toISOString(),
       });
 
-      showNotification('Account created successfully!');
+      // ✅ Ganti showNotification dengan alert sementara
+      alert('Account created successfully!');
       setTimeout(() => (window.location.href = '/login'), 1200);
     } catch (err: any) {
       console.error(err);
-      showNotification(err.message || 'Registration failed!');
+      alert(err.message || 'Registration failed!');
     } finally {
       setLoading(false);
     }
