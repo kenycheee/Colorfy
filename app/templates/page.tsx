@@ -1,5 +1,5 @@
 "use client";
-import Template from "../../components/templates";
+import Template from "../../components/Template";
 
 export default function Page() {
   return <Template />;
