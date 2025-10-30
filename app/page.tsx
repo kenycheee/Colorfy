@@ -7,15 +7,11 @@ import { useRouter } from 'next/navigation';
 export default function HomePage() {
   const router = useRouter();
 
-  // Fungsi saat tombol ditekan
   const handleStart = () => {
     const user = auth.currentUser;
-
     if (user) {
-      // ✅ Jika sudah login → ke templates
       router.push('/templates');
     } else {
-      // ⚠️ Jika belum login → ke login
       router.push('/login');
     }
   };
@@ -23,32 +19,37 @@ export default function HomePage() {
   return (
     <>
       <section className="hero" id="home">
-        <h1>
-          Beautiful Websites,<br />
-          <span className="highlight">Your Colors</span>
-        </h1>
-        <p>
-          Choose from professionally designed templates and make them your own with our intuitive color customization tools. 
-          Build stunning websites in minutes, not hours.
-        </p>
-        <div className="hero-buttons">
-          <a href="#" className="btn-primary">#</a>
-          <a href="#" className="btn-secondary">#</a>
+        {/* Spline pindah ke sini */}
+        <div className="spline-bg">
+          <iframe
+            src="https://my.spline.design/websiteinteractiveflyingalien-ZaeUwJaTznpkZwIY6Lv9bRjq/"
+            frameBorder="0"
+            allow="autoplay; fullscreen"
+            loading="lazy"
+            title="Colorfy 3D Hero"
+          />
         </div>
-      </section>
+
+        <div className="hero-content">
+          <h1>
+            Beautiful Websites,<br />
+            <span className="highlight">Your Colors</span>
+          </h1>
+
+          <p>
+            Choose from professionally designed templates and make them your own with our intuitive
+            color customization tools. Build stunning websites in minutes, not hours.
+          </p>
+
+          <div className="hero-buttons">
+            <a href="/templates" className="btn-primary">Template</a>
+            <a href="#" className="btn-secondary">#</a>
+          </div>
+        </div>
+      </section>x``
 
       <section className="preview-section" id="templates">
         <div className="preview-card">
-          <div className="spline-bg">
-            <iframe
-              src="https://my.spline.design/websiteinteractiveflyingalien-ZaeUwJaTznpkZwIY6Lv9bRjq/"
-              frameBorder="0"
-              allow="autoplay; fullscreen"
-              loading="lazy"
-              title="Colorfy 3D Preview"
-            />
-          </div>
-
           <div className="mockup">
             <div className="mockup-icon" />
             <div className="mockup-bar" />
