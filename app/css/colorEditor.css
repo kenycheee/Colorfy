@@ -1,0 +1,114 @@
+/* Dedicated styles for the right-side Color Editor panel */
+.ce-wrap {
+  margin-top: 1rem;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  color: #111827;
+}
+
+.ce-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .75rem;
+}
+
+.ce-title {
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.ce-x {
+  background: transparent;
+  border: 0;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #6b7280;
+}
+.ce-x:hover { color: #111827; }
+
+.ce-list {
+  display: grid;
+  gap: .75rem;
+}
+
+.ce-row {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: .75rem;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(0,0,0,.03);
+}
+
+.ce-label {
+  font-size: .85rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: .5rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.ce-controls {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: .5rem;
+  align-items: center;
+}
+
+.ce-color {
+  width: 56px;
+  height: 40px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ce-hex {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0 .6rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.ce-apply {
+  height: 40px;
+  padding: 0 .9rem;
+  border: 0;
+  border-radius: 8px;
+  background: #3B82F6;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(59,130,246,.18);
+}
+
+.ce-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem;
+  margin-top: .9rem;
+}
+
+.ce-saveall,
+.ce-cancel {
+  height: 42px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ce-saveall {
+  border: 0;
+  background: linear-gradient(135deg, #06B6D4, #8B5CF6);
+  color: #fff;
+  box-shadow: 0 12px 28px rgba(6,182,212,.18);
+}
+
+.ce-cancel {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #111827;
+}

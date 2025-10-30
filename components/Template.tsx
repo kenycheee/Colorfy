@@ -3,10 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import ColorEditor from "./ColorEditor";
 import { applySavedStyles } from "@/lib/templateStyles";
 
-/**
- * Main Template component with editable elements
- * Layout: left = template, right = editor panel
- */
 export default function Template() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [target, setTarget] = useState<HTMLElement | null>(null);
@@ -17,7 +13,7 @@ export default function Template() {
     applySavedStyles(rootRef.current);
   }, []);
 
-  // Handle clicks on editable elements
+  // Click-to-edit wiring
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -51,33 +47,27 @@ export default function Template() {
       <div
         ref={rootRef}
         className="page-wrap"
-        style={{
-          flex: 1,
-          overflow: "hidden", // biar tidak scroll
-          height: "100%",
-        }}
+        style={{ flex: 1, overflow: "hidden", height: "100%" }}
       >
-        {/* --- CONTENT TEMPLATE (tidak diubah sama sekali) --- */}
-        <header className="bar" data-edit-id="nav" data-edit-name="Top Bar">
-          <div className="brand" data-edit-id="brand" data-edit-name="Brand">
-            GOBY
-          </div>
-          <div className="actions">
-            <a href="#" className="link">
-              subscribe & save →
-            </a>
-            <a
-              href="#cta"
-              className="btn"
-              data-edit-id="nav-cta"
-              data-edit-name="Top CTA"
-            >
-              shop now
-            </a>
+        {/* NAVBAR */}
+        <header className="tpl-navbar" data-edit-id="nav" data-edit-name="Navbar">
+          <a className="tpl-brand" href="#templates">
+            Logo
+          </a>
+
+          <nav className="tpl-links" aria-label="Primary">
+            <a href="#templates">#1</a>
+            <a href="#features">#2</a>
+            <a href="#about">#3</a>
+          </nav>
+
+          <div className="tpl-actions">
+            <a className="tpl-ghost" href="#preview">btn1</a>
+            <a className="tpl-cta" href="#cta">btn2</a>
           </div>
         </header>
 
-        {/* Hero */}
+        {/* HERO */}
         <section
           className="hero"
           id="templates"
@@ -99,9 +89,10 @@ export default function Template() {
                 data-edit-id="hero-cta"
                 data-edit-name="Hero CTA"
               >
-                SHOP NOW
+                btn3
               </a>
             </div>
+
             <div className="hero-art">
               <div
                 className="product left"
@@ -127,23 +118,19 @@ export default function Template() {
               />
             </div>
           </div>
+
           <div
             className="hero-band"
             data-edit-id="hero-band"
             data-edit-name="Hero Blue Band"
           >
-            <div>
-              Top Electric Toothbrush <b>ASK THE DENTIST</b>
-            </div>
-            <div>
-              Best Subscription Toothbrush <b>WIRECUTTER</b>
-            </div>
-            <div>
-              2017 Grooming Award <b>MEN&apos;S HEALTH</b>
-            </div>
+            <div>Top Electric Toothbrush <b>ASK THE DENTIST</b></div>
+            <div>Best Subscription Toothbrush <b>WIRECUTTER</b></div>
+            <div>2017 Grooming Award <b>MEN&apos;S HEALTH</b></div>
           </div>
         </section>
-        {/* ICON STRIP, BENEFITS, TESTIMONIAL, GIVES, GRID, GUARANTEE */}
+
+        {/* Add more sections below if needed */}
       </div>
 
       {/* RIGHT COLUMN: Editor panel */}
