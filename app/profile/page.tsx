@@ -7,18 +7,20 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 
-interface ColorTemplate {
-  id: string;
-  title: string;
-  colors: string[];
-}
-
 export default function ProfilePage() {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [templates, setTemplates] = useState<ColorTemplate[]>([]);
+  const [likedTemplates, setLikedTemplates] = useState<ColorTemplate[]>([]);
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'post' | 'like'>('post');
   const router = useRouter();
+
+  interface ColorTemplate {
+    id: string;
+    title: string;
+    colors: string[];
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -51,10 +53,24 @@ export default function ProfilePage() {
           colors: ['#355C7D', '#6C5B7B', '#C06C84', '#F8B195'],
         },
       ];
+
+      const likedDummyTemplates: ColorTemplate[] = [
+        {
+          id: '4',
+          title: 'Candy Pop',
+          colors: ['#FDCB82', '#F48FB1', '#F06292', '#CE93D8'],
+        },
+        {
+          id: '5',
+          title: 'Midnight Blue',
+          colors: ['#232526', '#414345', '#2C3E50', '#4CA1AF'],
+        },
+      ];
+
       setTemplates(dummyTemplates);
+      setLikedTemplates(likedDummyTemplates);
       setLoading(false);
     });
-    
 
     return () => unsubscribe();
   }, [router]);
@@ -69,133 +85,146 @@ export default function ProfilePage() {
       console.error('Gagal menyalin warna:', err);
     }
   };
+
   if (loading) return <p>Loading...</p>;
 
   return (
-    <main className="auth-section" style={{ textAlign: 'center', color: 'white' }}>
+    <main className="profile-page">
       <BackHome />
 
-      <div
-        className="auth-card"
-        style={{
-          maxWidth: '400px',
-          margin: '0 auto',
-          background: 'rgba(255,255,255,0.05)',
-          borderRadius: '20px',
-          padding: '20px',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-        }}
-      >
-        {/* FOTO PROFIL */}
-        <div className="profile-avatar">
-          <img
-            src={
-              userData?.photoURL ||
-              'https://cdn-icons-png.flaticon.com/512/149/149071.png'
-            }
-            alt="Profile"
-          />
-        </div>
+      {/* === CONTENT WRAPPER === */}
+      <div className="profile-layout">
+        {/* === LEFT SIDE: PROFILE INFO === */}
+        <aside className="profile-sidebar glass-card">
+          <div className="profile-avatar-large neon-border">
+            <img
+              src={
+                userData?.photoURL ||
+                'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+              }
+              alt="Profile"
+            />
+          </div>
 
-        {/* NAMA DAN EMAIL */}
-        <h1 className="auth-title" style={{ fontSize: '1.5rem', marginBottom: '5px' }}>
-          {userData?.username || 'Anonymous User'}
-        </h1>
-        <p className="auth-subtitle" style={{ marginBottom: '20px', color: '#bbb' }}>
-          {userData?.email}
-        </p>
+          <h2>{userData?.username || 'Anonymous User'}</h2>
+          <p className="user-email">{userData?.email}</p>
 
-        {/* DETAIL INFORMASI */}
-        <div className="profile-info">
-          <p>
-            <strong>Bio:</strong> {userData?.bio || 'Belum ada bio.'}
+          <p className="user-bio">
+            {userData?.bio || 'Belum ada bio yang ditulis.'}
           </p>
-          <p>
-            <strong>Nomor HP:</strong> {userData?.phone || 'Belum ditambahkan.'}
-          </p>
-          <p>
-            <strong>Bergabung sejak:</strong>{' '}
-            {userData?.createdAt
-              ? new Date(userData.createdAt.seconds * 1000).toLocaleDateString()
-              : 'Tidak diketahui'}
-          </p>
-        </div>
 
-        {/* BAGIAN TEMPLATE WARNA */}
-        <div className="profile-templates">
-          <h2>🎨 Templates</h2>
-          {templates.length > 0 ? (
-            <div className="template-list">
-              {templates.map((tpl) => (
-                <div key={tpl.id} className="template-item">
-                  <p className="template-title">{tpl.title}</p>
-                  <div className="color-row">
-                    {tpl.colors.map((c, idx) => (
-                      <div
-                        key={idx}
-                        className={`color-box ${
-                          copiedColor === c ? 'copied' : ''
-                        }`}
-                        style={{ background: c }}
-                        onClick={() => handleCopyColor(c)}
-                        title={`Klik untuk copy ${c}`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="no-template">Kamu belum membuat template warna.</p>
-          )}
-        </div>
+          <div className="user-meta">
+            <p>
+              <strong>Bergabung:</strong>{' '}
+              {userData?.createdAt
+                ? new Date(userData.createdAt.seconds * 1000).toLocaleDateString()
+                : 'Tidak diketahui'}
+            </p>
+          </div>
 
-        {/* NOTIF COPY */}
-        {copiedColor && (
-          <div className="copy-notif">✅ {copiedColor} copied!</div>
-        )}
-
-        {/* TOMBOL AKSI */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '10px',
-            marginTop: '20px',
-          }}
-        >
           <button
-            className="btn-primary"
+            className="btn-edit"
             onClick={() => router.push('/editprofile')}
-            style={{
-              background: '#007bff',
-              border: 'none',
-              padding: '10px',
-              borderRadius: '8px',
-              color: 'white',
-              cursor: 'pointer',
-            }}
           >
             Edit Profile
           </button>
 
           <button
-            className="btn-primary"
+            className="btn-logout"
             onClick={() => {
               auth.signOut().then(() => router.push('/login'));
-            }}
-            style={{
-              background: '#dc3545',
-              border: 'none',
-              padding: '10px',
-              borderRadius: '8px',
-              color: 'white',
-              cursor: 'pointer',
             }}
           >
             Logout
           </button>
-        </div>
+        </aside>
+
+        {/* === RIGHT SIDE: CONTENT === */}
+        <section className="profile-content fade-in">
+          {/* === TAB HEADER (POST / LIKE) === */}
+          <div className="tab-header">
+            <button
+              className={activeTab === 'post' ? 'active' : ''}
+              onClick={() => setActiveTab('post')}
+            >
+              Post
+            </button>
+            <button
+              className={activeTab === 'like' ? 'active' : ''}
+              onClick={() => setActiveTab('like')}
+            >
+              Like
+            </button>
+          </div>
+
+          {/* === TAB CONTENT === */}
+          <div className="profile-templates">
+            {activeTab === 'post' ? (
+              <>
+                <h2 className="template-title-section">🎨 Your Templates</h2>
+                {templates.length > 0 ? (
+                  <div className="template-scroll vertical-layout">
+                    {templates.map((tpl) => (
+                      <div key={tpl.id} className="template-card glass-card">
+                        <p className="template-title">{tpl.title}</p>
+                        <div className="color-row">
+                          {tpl.colors.map((c, idx) => (
+                            <div
+                              key={idx}
+                              className={`color-box ${
+                                copiedColor === c ? 'copied' : ''
+                              }`}
+                              style={{ background: c }}
+                              onClick={() => handleCopyColor(c)}
+                              title={`Klik untuk copy ${c}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="no-template">Kamu belum membuat template warna.</p>
+                )}
+              </>
+            ) : (
+              <>
+                <h2 className="template-title-section">⭐ Favorite Templates</h2>
+                {likedTemplates.length > 0 ? (
+                  <div className="template-scroll vertical-layout">
+                    {likedTemplates.map((tpl) => (
+                      <div key={tpl.id} className="template-card glass-card">
+                        <p className="template-title">{tpl.title}</p>
+                        <div className="color-row">
+                          {tpl.colors.map((c, idx) => (
+                            <div
+                              key={idx}
+                              className={`color-box ${
+                                copiedColor === c ? 'copied' : ''
+                              }`}
+                              style={{ background: c }}
+                              onClick={() => handleCopyColor(c)}
+                              title={`Klik untuk copy ${c}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="no-template">
+                    Kamu belum memberi like pada template mana pun.
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* NOTIF COPY */}
+          {copiedColor && (
+            <div className="copy-notif">✅ {copiedColor} copied!</div>
+          )}
+        </section>
       </div>
     </main>
   );
