@@ -1,0 +1,117 @@
+/* --- PAGE WRAPPER --- */
+.search-page {
+  background: radial-gradient(circle at top left, #0f172a, #020617);
+  min-height: 100vh;
+  padding-top: 120px; /* agar tidak ketutupan header */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* --- SEARCH BAR --- */
+.search-container {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.search-bar::placeholder {
+  color: #aaa;
+}
+
+/* --- TEMPLATE GRID --- */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 40px;
+  width: 90%;
+  max-width: 1200px;
+}
+
+/* --- TEMPLATE CARD --- */
+.template-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.template-card:hover {
+  transform: scale(1.02);
+}
+
+/* --- MOCKUP --- */
+.mockup {
+  width: 100%;
+  height: 120px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 15px;
+  margin-bottom: 15px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mockup-bar {
+  height: 10px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+}
+
+.mockup-bar.short { width: 60%; }
+.mockup-bar.long { width: 90%; }
+
+.mockup-button {
+  width: 40%;
+  height: 14px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+}
+
+/* --- COLORS --- */
+.color-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.color-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.color-box:hover {
+  transform: scale(1.1);
+}
+
+/* --- TITLE --- */
+.template-title {
+  font-size: 1rem;
+  color: #ddd;
+  margin-top: 8px;
+}
