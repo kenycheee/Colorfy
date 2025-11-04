@@ -3,6 +3,7 @@
 
 /* ==================== GLOBAL ==================== */
 .profile-page {
+  padding-top: 30px;
   background: var(--darker-bg, #0d0d13);
   color: #fff;
   min-height: 100vh;
