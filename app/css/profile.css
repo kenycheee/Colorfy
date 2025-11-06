@@ -14,7 +14,7 @@
   justify-content: center;
   align-items: flex-start;
   gap: 3rem;
-  padding: 4rem 6rem;
+  padding: 5rem 6rem;
 }
 
 /* ==================== SIDEBAR ==================== */
@@ -22,7 +22,7 @@
   flex: 0 0 300px;
   background: #1e1f29;
   border-radius: 1rem;
-  margin-top: 5%;
+  margin-top: 8.6rem;
   padding: 1.5rem;
   height: fit-content;
 }
