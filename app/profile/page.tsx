@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import BackHome from '@/components/BackHome';
 import { auth, db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
