@@ -12,7 +12,7 @@ export default function Navbar() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const HIDE_ON = ['/login', '/register', '/templates'];
+  const HIDE_ON = ['/login', '/register', '/editprofile', '/templates'];
 
   useEffect(() => {
     const nav = navRef.current;

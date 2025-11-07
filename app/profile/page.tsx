@@ -2,27 +2,28 @@
 
 import { useEffect, useState } from 'react';
 import { auth, db } from '@/lib/firebase';
-import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+} from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
-import Navbar from '@/components/Navbar';
-
-interface ColorTemplate {
-  id: string;
-  title: string;
-  description?: string;
-  colors: string[];
-  categories?: string;
-  createdAt?: string;
-}
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState<any>(null);
-  const [templates, setTemplates] = useState<ColorTemplate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [templates, setTemplates] = useState<ColorTemplate[]>([]);
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'post' | 'like'>('post');
   const router = useRouter();
+
+  interface ColorTemplate {
+    id: string;
+    title: string;
+    colors: string[];
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -31,30 +32,22 @@ export default function ProfilePage() {
         return;
       }
 
-      try {
-        const userSnap = await getDoc(doc(db, 'users', user.uid));
-        if (userSnap.exists()) {
-          setUserData(userSnap.data());
-        }
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
 
-        const palCol = collection(db, `users/${user.uid}/palleteList`);
-        const palSnap = await getDocs(palCol);
-        const list: ColorTemplate[] = [];
-        palSnap.forEach((d) => {
-          const data = d.data();
-          list.push({
-            id: d.id,
-            title: data.title || 'Untitled',
-            description: data.description || '',
-            colors: data.colors || [],
-            categories: data.categories || 'Uncategorized',
-            createdAt: data.createdAt || '',
-          });
-        });
+      if (userSnap.exists()) {
+        setUserData(userSnap.data());
 
-        setTemplates(list);
-      } catch (err) {
-        console.error('Error loading profile:', err);
+        // Ambil semua palette user dari subcollection `palleteList`
+        const palleteRef = collection(userRef, 'palleteList');
+        const palleteSnap = await getDocs(palleteRef);
+
+        const userPalettes: ColorTemplate[] = palleteSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as Omit<ColorTemplate, 'id'>),
+        }));
+
+        setTemplates(userPalettes);
       }
 
       setLoading(false);
@@ -69,132 +62,109 @@ export default function ProfilePage() {
       setCopiedColor(color);
       setTimeout(() => setCopiedColor(null), 1500);
     } catch (err) {
-      console.error('Gagal menyalin warna:', err);
+      console.error('Failed to Copy:', err);
     }
   };
 
   if (loading) return <p>Loading...</p>;
 
   return (
-    <>
-      {/* === FIXED NAVBAR === */}
-      <Navbar />
+    <main className="profile-page">
+      <div className="profile-layout">
+        {/* === SIDEBAR === */}
+        <aside className="profile-sidebar glass-card">
+          <div className="profile-avatar-large neon-border">
+            <img
+              src={
+                userData?.photoURL ||
+                'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+              }
+              alt="Profile"
+            />
+          </div>
 
-      {/* === PROFILE CONTENT === */}
-      <main className="profile-page">
-        <div className="profile-layout">
-          {/* === LEFT SIDE === */}
-          <aside className="profile-sidebar glass-card">
-            <div className="profile-avatar-large neon-border">
-              <img
-                src={
-                  userData?.photoURL ||
-                  'https://cdn-icons-png.flaticon.com/512/149/149071.png'
-                }
-                alt="Profile"
-              />
-            </div>
+          <h2>{userData?.username || 'Anonymous User'}</h2>
+          <p className="user-email">{userData?.email}</p>
+          <p className="user-bio">{userData?.bio || 'No Bio.'}</p>
 
-            <h2>{userData?.username || 'Anonymous User'}</h2>
-            <p className="user-email">{userData?.email}</p>
-
-            <p className="user-bio">
-              {userData?.bio || 'Belum ada bio yang ditulis.'}
+          <div className="user-meta">
+            <p>
+              <strong>Joined:</strong>{' '}
+              {userData?.createdAt
+                ? new Date(userData.createdAt).toLocaleDateString()
+                : 'Unknown'}
             </p>
+          </div>
 
-            <div className="user-meta">
-              <p>
-                <strong>Bergabung:</strong>{' '}
-                {userData?.createdAt
-                  ? new Date(userData.createdAt).toLocaleDateString()
-                  : 'Tidak diketahui'}
-              </p>
-            </div>
+          <button
+            className="btn-edit"
+            onClick={() => router.push('/editprofile')}
+          >
+            Edit Profile
+          </button>
 
+          <button
+            className="btn-logout"
+            onClick={() => {
+              auth.signOut().then(() => router.push('/login'));
+            }}
+          >
+            Logout
+          </button>
+        </aside>
+
+        {/* === MAIN CONTENT === */}
+        <section className="profile-content fade-in">
+          <div className="tab-header">
             <button
-              className="btn-edit"
-              onClick={() => router.push('/editprofile')}
+              className={activeTab === 'post' ? 'active' : ''}
+              onClick={() => setActiveTab('post')}
             >
-              Edit Profile
+              Post
             </button>
+          </div>
 
-            <button
-              className="btn-logout"
-              onClick={() => {
-                auth.signOut().then(() => router.push('/login'));
-              }}
-            >
-              Logout
-            </button>
-          </aside>
+          <div className="profile-templates">
+            <h2 className="template-title-section">🎨 Your Templates</h2>
 
-          {/* === RIGHT SIDE === */}
-          <section className="profile-content fade-in">
-            <div className="tab-header">
-              <button
-                className={activeTab === 'post' ? 'active' : ''}
-                onClick={() => setActiveTab('post')}
-              >
-                Post
-              </button>
-              <button
-                className={activeTab === 'like' ? 'active' : ''}
-                onClick={() => setActiveTab('like')}
-              >
-                Like
-              </button>
-            </div>
+            <div className="template-grid">
+              {templates.length > 0 ? (
+                templates.map((tpl) => (
+                  <div key={tpl.id} className="template-card">
+                    <div className="mockup">
+                      <div className="mockup-bar short"></div>
+                      <div className="mockup-bar long"></div>
+                      <div className="mockup-button"></div>
+                    </div>
 
-            <div className="profile-templates">
-              {activeTab === 'post' ? (
-                <>
-                  <h2 className="template-title-section">🎨 Your Palettes</h2>
-                  {templates.length > 0 ? (
-                    <div className="template-scroll vertical-layout">
-                      {templates.map((tpl) => (
-                        <div key={tpl.id} className="template-card glass-card">
-                          <p className="template-title">{tpl.title}</p>
-                          {tpl.description && (
-                            <p className="template-desc">{tpl.description}</p>
-                          )}
-                          <div className="color-row">
-                            {tpl.colors.map((c, idx) => (
-                              <div
-                                key={idx}
-                                className={`color-box ${
-                                  copiedColor === c ? 'copied' : ''
-                                }`}
-                                style={{ background: c }}
-                                onClick={() => handleCopyColor(c)}
-                                title={`Klik untuk copy ${c}`}
-                              />
-                            ))}
-                          </div>
-                          <p className="template-category">
-                            📂 {tpl.categories}
-                          </p>
-                        </div>
+                    <div className="color-row">
+                      {tpl.colors.map((color, i) => (
+                        <div
+                          key={i}
+                          className={`color-box ${
+                            copiedColor === color ? 'copied' : ''
+                          }`}
+                          style={{ background: color }}
+                          onClick={() => handleCopyColor(color)}
+                          title={`Click to Copy ${color}`}
+                        />
                       ))}
                     </div>
-                  ) : (
-                    <p className="no-template">
-                      Kamu belum membuat palette warna.
-                    </p>
-                  )}
-                </>
+
+                    <p className="template-title">{tpl.title}</p>
+                  </div>
+                ))
               ) : (
-                <p className="no-template">
-                  Fitur "Like" belum tersedia di database.
-                </p>
+                <p>No palettes yet.</p>
               )}
             </div>
+          </div>
 
-            {copiedColor && (
-              <div className="copy-notif">✅ {copiedColor} copied!</div>
-            )}
-          </section>
-        </div>
-      </main>
-    </>
+          {copiedColor && (
+            <div className="copy-notif">✅ {copiedColor} copied!</div>
+          )}
+        </section>
+      </div>
+    </main>
   );
 }
