@@ -2,7 +2,7 @@
 .search-page {
   background: radial-gradient(circle at top left, #0f172a, #020617);
   min-height: 100vh;
-  padding-top: 120px; /* agar tidak ketutupan header */
+  padding-top: 120px;
   color: white;
   display: flex;
   flex-direction: column;
@@ -42,10 +42,12 @@
   gap: 40px;
   width: 90%;
   max-width: 1200px;
+  overflow: visible; /* biar animasi hover gak ketutup */
 }
 
 /* --- TEMPLATE CARD --- */
 .template-card {
+  position: relative;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   padding: 20px;
@@ -53,11 +55,41 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transform-origin: center;
+  z-index: 0;
 }
 
 .template-card:hover {
   transform: scale(1.02);
+  z-index: 2;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+}
+
+/* --- LIKE BUTTON --- */
+.like-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 3; /* pastikan tombol selalu di atas card */
+  transition: transform 0.2s ease;
+}
+
+.like-btn:hover {
+  transform: scale(1.1);
+}
+
+.heart-icon {
+  font-size: 1.6rem;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s ease;
+}
+
+.heart-icon.liked {
+  color: #ff4b5c;
 }
 
 /* --- MOCKUP --- */
@@ -71,6 +103,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  pointer-events: none; /* penting: biar gak blok klik like */
 }
 
 .mockup-bar {
