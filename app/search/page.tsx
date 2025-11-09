@@ -154,6 +154,7 @@ export default function SearchPage() {
                 {tpl.userId && (
                   <p className="mockup-creator">By {creatorName}</p>
                 )}
+                <p className='mockup-button' />
               </div>
 
               <div className="color-row">
