@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { auth, db } from '@/lib/firebase';
 import {
   collection,
+  collectionGroup,
   onSnapshot,
   doc,
+  getDoc,
   setDoc,
   deleteDoc,
   serverTimestamp,
@@ -19,8 +21,9 @@ export default function SearchPage() {
   const [templates, setTemplates] = useState<any[]>([]);
   const [likedIds, setLikedIds] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [userCache, setUserCache] = useState<Record<string, string>>({});
 
-  // ✅ Ambil user login + realtime favorites
+  // 🔹 Ambil user login + realtime favorites
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -31,7 +34,7 @@ export default function SearchPage() {
           setLikedIds(snap.docs.map((d) => d.id));
         });
 
-        return () => unsubFav(); // cleanup listener
+        return () => unsubFav();
       } else {
         setUserId(null);
         setLikedIds([]);
@@ -41,33 +44,49 @@ export default function SearchPage() {
     return () => unsubAuth();
   }, []);
 
-  // ✅ Ambil semua palette dari global palleteList (realtime)
+  // 🔹 Ambil semua palette dari setiap user (pakai collectionGroup)
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'palleteList'), (snap) => {
-      const data = snap.docs.map((d) => {
-        const docId = d.id; // selalu string
-        const docData = d.data();
-        return { docId, ...docData };
-      });
+    const unsub = onSnapshot(collectionGroup(db, 'palleteList'), (snap) => {
+      const data = snap.docs.map((d) => ({
+        docId: d.id,
+        userId: d.ref.parent.parent?.id || null,
+        ...d.data(),
+      }));
       setTemplates(data);
     });
 
     return () => unsub();
   }, []);
 
-  // ❤ Like / Unlike palette (dengan fix tipe aman)
+  // 🔹 Ambil nama creator dari Firestore (hanya jika belum di-cache)
+  useEffect(() => {
+    const missingUserIds = [
+      ...new Set(templates.map((t) => t.userId).filter((id) => id && !userCache[id])),
+    ] as string[];
+
+    if (missingUserIds.length === 0) return;
+
+    missingUserIds.forEach(async (uid) => {
+      const ref = doc(db, 'users', uid);
+      const snap = await getDoc(ref);
+      const username = snap.exists() ? snap.data().username || 'Anonymous User' : 'Anonymous User';
+
+      setUserCache((prev) => ({
+        ...prev,
+        [uid]: username,
+      }));
+    });
+  }, [templates]);
+
+  // ❤️ Like / Unlike palette
   const toggleLike = async (tpl: any) => {
     if (!userId) {
       alert('Please login first!');
       return;
     }
 
-    // pastikan ID-nya valid string
-    const paletteId = typeof tpl.docId === 'string' ? tpl.docId : String(tpl.id || '').trim();
-    if (!paletteId) {
-      console.error('❌ Invalid paletteId:', tpl);
-      return;
-    }
+    const paletteId = tpl.docId;
+    if (!paletteId) return;
 
     const favRef = doc(db, 'users', userId, 'likedPalettes', paletteId);
     const alreadyLiked = likedIds.includes(paletteId);
@@ -109,9 +128,9 @@ export default function SearchPage() {
 
       <div className="template-grid">
         {filtered.map((tpl) => {
-          const paletteId =
-            typeof tpl.docId === 'string' ? tpl.docId : String(tpl.id || '').trim();
+          const paletteId = tpl.docId;
           const isLiked = likedIds.includes(paletteId);
+          const creatorName = userCache[tpl.userId] || 'Loading...';
 
           return (
             <div key={paletteId} className="template-card">
@@ -127,10 +146,14 @@ export default function SearchPage() {
                 )}
               </button>
 
-              <div className="mockup">
-                <div className="mockup-bar short"></div>
-                <div className="mockup-bar long"></div>
-                <div className="mockup-button"></div>
+              <div className="mockup-search">
+                <p className="mockup-title">{tpl.title || 'Untitled Palette'}</p>
+                {tpl.description && (
+                  <p className="mockup-description">{tpl.description}</p>
+                )}
+                {tpl.userId && (
+                  <p className="mockup-creator">By {creatorName}</p>
+                )}
               </div>
 
               <div className="color-row">
@@ -142,8 +165,6 @@ export default function SearchPage() {
                   />
                 ))}
               </div>
-
-              <p className="template-title">{tpl.title}</p>
             </div>
           );
         })}

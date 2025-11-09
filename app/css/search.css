@@ -26,9 +26,9 @@
   border: none;
   outline: none;
   font-size: 1rem;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .search-bar::placeholder {
@@ -42,7 +42,7 @@
   gap: 40px;
   width: 90%;
   max-width: 1200px;
-  overflow: visible; /* biar animasi hover gak ketutup */
+  overflow: visible;
 }
 
 /* --- TEMPLATE CARD --- */
@@ -50,11 +50,10 @@
   position: relative;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
-  align-items: center;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   transform-origin: center;
   z-index: 0;
@@ -63,18 +62,18 @@
 .template-card:hover {
   transform: scale(1.02);
   z-index: 2;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
 /* --- LIKE BUTTON --- */
 .like-btn {
   position: absolute;
-  top: 12px;
   right: 12px;
+  bottom: 12px;
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 3; /* pastikan tombol selalu di atas card */
+  z-index: 3;
   transition: transform 0.2s ease;
 }
 
@@ -82,44 +81,46 @@
   transform: scale(1.1);
 }
 
-.heart-icon {
-  font-size: 1.6rem;
-  color: rgba(255, 255, 255, 0.6);
-  transition: color 0.2s ease;
-}
-
-.heart-icon.liked {
-  color: #ff4b5c;
-}
-
 /* --- MOCKUP --- */
-.mockup {
+.mockup-search {
   width: 100%;
-  height: 120px;
-  background: rgba(255,255,255,0.03);
+  height: 140px;
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 15px;
   margin-bottom: 15px;
-  padding: 15px;
+  padding: 18px 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  pointer-events: none; /* penting: biar gak blok klik like */
+  pointer-events: none;
 }
 
-.mockup-bar {
-  height: 10px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 10px;
+/* --- TEXT DALAM MOCKUP --- */
+.mockup-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 4px;
 }
 
-.mockup-bar.short { width: 60%; }
-.mockup-bar.long { width: 90%; }
+.mockup-description {
+  font-size: 0.9rem;
+  color: #bbb;
+  margin-bottom: 4px;
+}
 
+.mockup-creator {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+/* --- GARIS GRADIENT --- */
 .mockup-button {
-  width: 40%;
-  height: 14px;
+  width: 100%;
+  height: 10px;
   border-radius: 10px;
   background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+  margin-top: 8px;
 }
 
 /* --- COLORS --- */
@@ -140,11 +141,4 @@
 
 .color-box:hover {
   transform: scale(1.1);
-}
-
-/* --- TITLE --- */
-.template-title {
-  font-size: 1rem;
-  color: #ddd;
-  margin-top: 8px;
 }

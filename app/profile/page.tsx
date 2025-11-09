@@ -185,7 +185,7 @@ export default function ProfilePage() {
                 {templates.length > 0 ? (
                   templates.map((tpl) => (
                     <div key={tpl.id} className="template-card">
-                      <div className="mockup">
+                      <div className="mockup-search">
                         <div className="mockup-bar short"></div>
                         <div className="mockup-bar long"></div>
                         <div className="mockup-button"></div>
