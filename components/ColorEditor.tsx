@@ -1,30 +1,65 @@
 "use client";
 import { useEffect, useState } from "react";
-import "../app/css/colorEditor.css";
-import {
-  applyToTarget,
-  saveStyleFor,
-  normalizeHex,
-  rgbToHex,
-} from "@/lib/templateStyles";
+import "@/app/css/colorEditor.css";
+import { saveStyleFor } from "@/lib/templateStyles";
 
 type PropKey = "background" | "color" | "borderColor";
 
-interface ColorEditorProps {
-  target: HTMLElement | null;
+function rgbToHex(rgb: string) {
+  if (!rgb) return "";
+  const res = rgb.match(/\d+/g);
+  return res
+    ? "#" +
+        res
+          .slice(0, 3)
+          .map((x) => {
+            const n = parseInt(x).toString(16);
+            return n.length === 1 ? "0" + n : n;
+          })
+          .join("")
+    : rgb;
+}
+
+function normalizeHex(hex: string) {
+  if (!hex) return "";
+  hex = hex.trim();
+  if (hex.startsWith("#")) return hex;
+  if (/^[0-9a-f]{3}$/i.test(hex)) return "#" + hex;
+  if (/^[0-9a-f]{6}$/i.test(hex)) return "#" + hex;
+  return hex;
+}
+
+// ambil root untuk CSS variable global
+function getRootFor(el: HTMLElement) {
+  return (el.closest(".tv-wrap") as HTMLElement) || document.documentElement;
+}
+
+interface Props {
+  target: HTMLElement;
   onClose: () => void;
 }
 
-export default function ColorEditor({ target, onClose }: ColorEditorProps) {
-  const [vals, setVals] = useState<Record<PropKey, string>>({
+export default function ColorEditor({ target, onClose }: Props) {
+  const [vals, setVals] = useState({
     background: "#ffffff",
     color: "#000000",
     borderColor: "#000000",
   });
 
-  // load current computed styles to hex
+  // ambil warna awal (support data-edit-var)
   useEffect(() => {
     if (!target) return;
+    const varName = target.dataset.editVar;
+    if (varName) {
+      const root = getRootFor(target);
+      const v = getComputedStyle(root).getPropertyValue(`--${varName}`).trim();
+      setVals({
+        background: normalizeHex(rgbToHex(v) || v) || "#ffffff",
+        color: "#000000",
+        borderColor: "#000000",
+      });
+      return;
+    }
     const cs = getComputedStyle(target);
     setVals({
       background: rgbToHex(cs.backgroundColor) || "#ffffff",
@@ -33,135 +68,68 @@ export default function ColorEditor({ target, onClose }: ColorEditorProps) {
     });
   }, [target]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  const setVal = (k: PropKey, v: string) => {
+    setVals((old) => ({ ...old, [k]: v }));
+  };
 
-  if (!target) return null;
-
-  const handleChange = (prop: PropKey, raw: string) => {
-    const v = normalizeHex(raw);
-    setVals((s) => ({ ...s, [prop]: v }));
+  const applyToTarget = (el: HTMLElement, prop: PropKey, val: string) => {
+    el.style[prop] = val;
   };
 
   const applyAndSave = (prop: PropKey) => {
     const v = vals[prop];
     if (!/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v)) return;
-    applyToTarget(target, prop, v);
-    saveStyleFor(target, prop, v);
+
+    const varName = target?.dataset.editVar;
+    if (prop === "background" && target && varName) {
+      const root = getRootFor(target);
+      root.style.setProperty(`--${varName}`, v);
+      try {
+        saveStyleFor(root as any, `--${varName}` as any, v);
+      } catch {}
+      return;
+    }
+
+    if (target) {
+      applyToTarget(target, prop, v);
+      saveStyleFor(target, prop, v);
+    }
+  };
+
+  const saveAll = () => {
+    (["background", "color", "borderColor"] as PropKey[]).forEach(applyAndSave);
+    onClose();
   };
 
   return (
-    <div className="ce-wrap">
-      <div className="ce-head">
-        <strong className="ce-title">
-          {target.dataset.editName || "Element"}
-        </strong>
-        <button className="ce-x" onClick={onClose} aria-label="Close">×</button>
+    <div className="color-editor">
+      <div className="color-editor-header">
+        <strong>{target.dataset.editName || "Element"}</strong>
+        <button onClick={onClose}>×</button>
       </div>
 
-      <div className="ce-list">
-        {/* Row: Background */}
-        <div className="ce-row">
-          <div className="ce-label">Background</div>
-          <div className="ce-controls">
-            <input
-              type="color"
-              value={vals.background}
-              onChange={(e) => {
-                handleChange("background", e.target.value);
-                applyToTarget(target, "background", e.target.value);
-              }}
-              className="ce-color"
-              aria-label="Background color"
-            />
-            <input
-              type="text"
-              value={vals.background}
-              onChange={(e) => handleChange("background", e.target.value)}
-              className="ce-hex"
-              placeholder="#ffffff"
-              spellCheck={false}
-            />
-            <button
-              className="ce-apply"
-              onClick={() => applyAndSave("background")}
-            >
-              Apply
-            </button>
-          </div>
+      {(["background", "color", "borderColor"] as PropKey[]).map((prop) => (
+        <div key={prop} className="color-row">
+          <label>{prop}</label>
+          <input
+            type="color"
+            value={vals[prop]}
+            onChange={(e) => setVal(prop, e.target.value)}
+          />
+          <input
+            type="text"
+            value={vals[prop]}
+            onChange={(e) => setVal(prop, normalizeHex(e.target.value))}
+            onBlur={() => applyAndSave(prop)}
+          />
         </div>
+      ))}
 
-        {/* Row: Text Color */}
-        <div className="ce-row">
-          <div className="ce-label">Text</div>
-          <div className="ce-controls">
-            <input
-              type="color"
-              value={vals.color}
-              onChange={(e) => {
-                handleChange("color", e.target.value);
-                applyToTarget(target, "color", e.target.value);
-              }}
-              className="ce-color"
-              aria-label="Text color"
-            />
-            <input
-              type="text"
-              value={vals.color}
-              onChange={(e) => handleChange("color", e.target.value)}
-              className="ce-hex"
-              placeholder="#000000"
-              spellCheck={false}
-            />
-            <button className="ce-apply" onClick={() => applyAndSave("color")}>
-              Apply
-            </button>
-          </div>
-        </div>
-
-        {/* Row: Border Color */}
-        <div className="ce-row">
-          <div className="ce-label">Border</div>
-          <div className="ce-controls">
-            <input
-              type="color"
-              value={vals.borderColor}
-              onChange={(e) => {
-                handleChange("borderColor", e.target.value);
-                applyToTarget(target, "borderColor", e.target.value);
-              }}
-              className="ce-color"
-              aria-label="Border color"
-            />
-            <input
-              type="text"
-              value={vals.borderColor}
-              onChange={(e) => handleChange("borderColor", e.target.value)}
-              className="ce-hex"
-              placeholder="#000000"
-              spellCheck={false}
-            />
-            <button
-              className="ce-apply"
-              onClick={() => applyAndSave("borderColor")}
-            >
-              Apply
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="ce-footer">
-        <button className="ce-saveall" onClick={() => {
-          (["background","color","borderColor"] as PropKey[]).forEach(applyAndSave);
-          onClose();
-        }}>
-          Save all
+      <div className="color-editor-actions">
+        <button onClick={saveAll}>Save all</button>
+        <button onClick={onClose} className="cancel">
+          Cancel
         </button>
-        <button className="ce-cancel" onClick={onClose}>Close</button>
       </div>
     </div>
   );
