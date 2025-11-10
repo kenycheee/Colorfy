@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -12,12 +12,11 @@ export default function Navbar() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const HIDE_ON = ['/login', '/register', '/editprofile', '/templates'];
+  const HIDE_ON = ['/login', '/register', '/editprofile'];
 
   useEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
-
     const onScroll = () => {
       const y = window.scrollY;
       if (y > 100) {
@@ -33,7 +32,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Cek login realtime
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsLoggedIn(!!user);
@@ -49,7 +47,6 @@ export default function Navbar() {
         <div className="logo-icon">🎨</div>
         Colorfy
       </div>
-
       <ul className="nav-links">
         <li><Link href="/">Home</Link></li>
         <li><Link href="/search">Search</Link></li>
