@@ -46,7 +46,7 @@ export default function HomePage() {
             <a href="#" className="btn-secondary">#</a>
           </div>
         </div>
-      </section>x``
+      </section>
 
       <section className="preview-section" id="templates">
         <div className="preview-card">

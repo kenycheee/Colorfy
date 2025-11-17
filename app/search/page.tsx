@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { auth, db } from '@/lib/firebase';
 import {
   collection,
-  collectionGroup,
   onSnapshot,
   doc,
   getDoc,
@@ -14,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
+
 import '@/app/css/search.css';
 
 export default function SearchPage() {
@@ -23,13 +23,16 @@ export default function SearchPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [userCache, setUserCache] = useState<Record<string, string>>({});
 
+  // ============================================================
   // 🔹 Ambil user login + realtime favorites
+  // ============================================================
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
 
         const favRef = collection(db, 'users', user.uid, 'likedPalettes');
+
         const unsubFav = onSnapshot(favRef, (snap) => {
           setLikedIds(snap.docs.map((d) => d.id));
         });
@@ -44,12 +47,13 @@ export default function SearchPage() {
     return () => unsubAuth();
   }, []);
 
-  // 🔹 Ambil semua palette dari setiap user (pakai collectionGroup)
+  // ============================================================
+  // 🔹 Ambil hanya koleksi publik "palleteList"
+  // ============================================================
   useEffect(() => {
-    const unsub = onSnapshot(collectionGroup(db, 'palleteList'), (snap) => {
+    const unsub = onSnapshot(collection(db, 'palleteList'), (snap) => {
       const data = snap.docs.map((d) => ({
         docId: d.id,
-        userId: d.ref.parent.parent?.id || null,
         ...d.data(),
       }));
       setTemplates(data);
@@ -58,38 +62,42 @@ export default function SearchPage() {
     return () => unsub();
   }, []);
 
-  // 🔹 Ambil nama creator dari Firestore (hanya jika belum di-cache)
+  // ============================================================
+  // 🔹 Ambil nama creator (cache biar efisien)
+  // ============================================================
   useEffect(() => {
-    const missingUserIds = [
-      ...new Set(templates.map((t) => t.userId).filter((id) => id && !userCache[id])),
+    const missingIds = [
+      ...new Set(
+        templates
+          .map((t) => t.userId)
+          .filter((id) => id && !userCache[id])
+      ),
     ] as string[];
 
-    if (missingUserIds.length === 0) return;
+    if (missingIds.length === 0) return;
 
-    missingUserIds.forEach(async (uid) => {
+    missingIds.forEach(async (uid) => {
       const ref = doc(db, 'users', uid);
       const snap = await getDoc(ref);
-      const username = snap.exists() ? snap.data().username || 'Anonymous User' : 'Anonymous User';
 
-      setUserCache((prev) => ({
-        ...prev,
-        [uid]: username,
-      }));
+      const username = snap.exists()
+        ? snap.data().username || 'Anonymous User'
+        : 'Anonymous User';
+
+      setUserCache((prev) => ({ ...prev, [uid]: username }));
     });
   }, [templates]);
 
-  // ❤️ Like / Unlike palette
+  // ============================================================
+  // ❤️ Like / Unlike
+  // ============================================================
   const toggleLike = async (tpl: any) => {
-    if (!userId) {
-      alert('Please login first!');
-      return;
-    }
+    if (!userId) return alert('Please login first!');
 
     const paletteId = tpl.docId;
-    if (!paletteId) return;
+    const alreadyLiked = likedIds.includes(paletteId);
 
     const favRef = doc(db, 'users', userId, 'likedPalettes', paletteId);
-    const alreadyLiked = likedIds.includes(paletteId);
 
     try {
       if (alreadyLiked) {
@@ -109,11 +117,16 @@ export default function SearchPage() {
     }
   };
 
-  // 🔍 Filter pencarian
+  // ============================================================
+  // 🔍 Search Filter (TITLE ONLY)
+  // ============================================================
   const filtered = templates.filter((t) =>
     t.title?.toLowerCase().includes(query.toLowerCase())
   );
 
+  // ============================================================
+  // UI
+  // ============================================================
   return (
     <main className="search-page">
       <div className="search-container">
@@ -140,21 +153,22 @@ export default function SearchPage() {
                 title={isLiked ? 'Unlike' : 'Like'}
               >
                 {isLiked ? (
-                  <FaHeart color="#ff4b5c" size={24} />
+                  <FaHeart size={22} color="#ff4b5c" />
                 ) : (
-                  <FaRegHeart color="#ddd" size={24} />
+                  <FaRegHeart size={22} color="#ccc" />
                 )}
               </button>
 
               <div className="mockup-search">
                 <p className="mockup-title">{tpl.title || 'Untitled Palette'}</p>
+
                 {tpl.description && (
                   <p className="mockup-description">{tpl.description}</p>
                 )}
+
                 {tpl.userId && (
                   <p className="mockup-creator">By {creatorName}</p>
                 )}
-                <p className='mockup-button' />
               </div>
 
               <div className="color-row">
