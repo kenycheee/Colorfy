@@ -9,7 +9,6 @@
 }
 
 :root {
-  /* Palette */
   --dark-bg: #0A0E27;
   --darker-bg: #050816;
   --card-bg: #151932;
@@ -545,7 +544,7 @@ section[id] {
   animation: checkPop .5s ease-out 1.2s both;
 }
 
-/* ============ 6) FEATURES ============ */
+/* ============ FEATURES ============ */
 
 .features {
   padding: 6rem 5%;
@@ -665,7 +664,7 @@ section[id] {
 }
 
 
-/* ============ 7) HOW IT WORKS ============ */
+/* ============ HOW IT WORKS ============ */
 
 .how-it-works {
   padding: 6rem 5%;
@@ -737,7 +736,7 @@ section[id] {
   line-height: 1.8; 
 }
 
-/* ============ 8) CTA ============ */
+/* ============ CTA ============ */
 
 .cta-section {
   padding: 6rem 5%;
@@ -812,7 +811,7 @@ section[id] {
   box-shadow: 0 0 50px var(--accent-glow), 0 15px 40px rgba(6,182,212,.4); 
 }
 
-/* ============ 9) FOOTER ============ */
+/* ============ FOOTER ============ */
 
 footer {
   background: var(--darker-bg);
@@ -879,7 +878,7 @@ footer {
     text-align: center;
 }
 
-/* ============ 10) SCROLLBAR ============ */
+/* ============ SCROLLBAR ============ */
 
 /* Chromium/WebKit */
 ::-webkit-scrollbar { 
@@ -900,7 +899,7 @@ footer {
   background: linear-gradient(180deg, var(--cyan-light), var(--purple-light));
 }
 
-/* ============ 11) RESPONSIVE ============ */
+/* ============ RESPONSIVE ============ */
 
 @media (max-width: 1024px) {
   .hero h1 { 
