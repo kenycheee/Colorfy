@@ -23,9 +23,6 @@ export default function SearchPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [userCache, setUserCache] = useState<Record<string, string>>({});
 
-  // ============================================================
-  // 🔹 Ambil user login + realtime favorites
-  // ============================================================
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -47,9 +44,6 @@ export default function SearchPage() {
     return () => unsubAuth();
   }, []);
 
-  // ============================================================
-  // 🔹 Ambil hanya koleksi publik "palleteList"
-  // ============================================================
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'palleteList'), (snap) => {
       const data = snap.docs.map((d) => ({
@@ -62,9 +56,6 @@ export default function SearchPage() {
     return () => unsub();
   }, []);
 
-  // ============================================================
-  // 🔹 Ambil nama creator (cache biar efisien)
-  // ============================================================
   useEffect(() => {
     const missingIds = [
       ...new Set(
@@ -88,9 +79,6 @@ export default function SearchPage() {
     });
   }, [templates]);
 
-  // ============================================================
-  // ❤️ Like / Unlike
-  // ============================================================
   const toggleLike = async (tpl: any) => {
     if (!userId) return alert('Please login first!');
 
@@ -117,16 +105,10 @@ export default function SearchPage() {
     }
   };
 
-  // ============================================================
-  // 🔍 Search Filter (TITLE ONLY)
-  // ============================================================
   const filtered = templates.filter((t) =>
     t.title?.toLowerCase().includes(query.toLowerCase())
   );
 
-  // ============================================================
-  // UI
-  // ============================================================
   return (
     <main className="search-page">
       <div className="search-container">
