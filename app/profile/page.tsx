@@ -11,7 +11,7 @@ import {
 } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
-import { FaHeart } from 'react-icons/fa'; // ❤️ icon filled
+import { FaHeart } from 'react-icons/fa';
 import '@/app/css/profile.css';
 
 export default function ProfilePage() {
@@ -59,7 +59,6 @@ export default function ProfilePage() {
     return () => unsubscribe();
   }, [router]);
 
-  // Ambil liked templates ketika tab like aktif
   useEffect(() => {
     if (activeTab !== 'like') return;
     if (!auth.currentUser) return;
