@@ -1,32 +1,33 @@
 # 🎨 Next.js Color Palette App
 
-A modern color palette generator built using **Next.js**, **Firebase**, and a fully responsive UI. Users can generate random palettes, customize them, and save their collections securely to Firestore.
+A modern and responsive **color palette generator** built using **Next.js**, **Firebase Authentication**, and **Firestore**.  
+Users can generate random palettes, customize colors, and securely store their collections in the cloud.
 
 ---
 
 ## ✨ Features
 
-### 🔄 Randomize or Reset
-Instantly generate random palettes or restore the default set with a single click.
+### 🔄 Randomize / Reset Colors  
+Generate a fully random palette or restore the default palette with a single click.
 
-### 🔐 Firebase Login
-Users must sign in before saving or managing their palettes.
+### 🔐 Firebase Authentication  
+Only logged-in users can save, edit, or delete palettes.
 
-### ☁️ Firestore Storage
+### ☁️ Firestore Storage  
 Palettes are stored in:
-- `users/{userId}/palleteList` (user-specific)
-- Global `palleteList` collection (public reference)
+- `users/{userId}/palleteList` — user-specific collections  
+- `palleteList` — global reference collection  
 
-### 🖥 Fully Responsive UI
-Optimized for mobile, tablet, and desktop layouts.
+### 📱 Fully Responsive UI  
+Built to look clean and consistent across **mobile**, **tablet**, and **desktop**.
 
 ---
 
 ## 🧱 Tech Stack
 
 | Category | Tools |
-|---------|-------|
-| Framework | **Next.js 16**, React |
+|----------|----------------|
+| Framework | Next.js 16, React |
 | Styling | CSS Modules / Custom CSS |
 | Authentication | Firebase Auth |
 | Database | Firestore |
@@ -35,9 +36,10 @@ Optimized for mobile, tablet, and desktop layouts.
 
 ---
 
+
 ## 🛠 Getting Started
 
-### 💾 1. Install Dependencies
+### 1️⃣ Install Dependencies
 
 ```bash
 npm install
@@ -47,3 +49,19 @@ yarn
 pnpm install
 # or
 bun install
+```
+
+### 2️⃣ Start the Development Server
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+
+# Open in your browser:
+# http://localhost:3000
+```
