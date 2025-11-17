@@ -19,7 +19,6 @@ export default function HomePage() {
   return (
     <>
       <section className="hero" id="home">
-        {/* Spline pindah ke sini */}
         <div className="spline-bg">
           <iframe
             src="https://my.spline.design/websiteinteractiveflyingalien-ZaeUwJaTznpkZwIY6Lv9bRjq/"
