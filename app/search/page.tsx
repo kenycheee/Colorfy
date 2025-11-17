@@ -22,6 +22,7 @@ export default function SearchPage() {
   const [likedIds, setLikedIds] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [userCache, setUserCache] = useState<Record<string, string>>({});
+  const [copiedColor, setCopiedColor] = useState<string | null>(null);
 
   // ============================================================
   // 🔹 Ambil user login + realtime favorites
@@ -124,6 +125,16 @@ export default function SearchPage() {
     t.title?.toLowerCase().includes(query.toLowerCase())
   );
 
+  const handleCopyColor = async (color: string) => {
+    try {
+      await navigator.clipboard.writeText(color);
+      setCopiedColor(color);
+      setTimeout(() => setCopiedColor(null), 1500);
+    } catch (err) {
+      console.error('Failed to Copy:', err);
+    }
+  };
+
   // ============================================================
   // UI
   // ============================================================
@@ -171,18 +182,32 @@ export default function SearchPage() {
                 )}
               </div>
 
+              <div
+                className="mockup-button-search"
+                style={{
+                  background: tpl.colors && tpl.colors.length > 1
+                  ? `linear-gradient(90deg, ${tpl.colors.join(',')})`
+                  : tpl.colors[0] || '#888',
+                  }}
+              ></div>
+
               <div className="color-row">
                 {tpl.colors?.map((color: string, i: number) => (
                   <div
                     key={i}
-                    className="color-box"
-                    style={{ background: color }}
+                    className={`color-box ${
+                              copiedColor === color ? 'copied' : ''
+                            }`}
+                            style={{ background: color }}
+                            onClick={() => handleCopyColor(color)}
+                            title={`Click to Copy ${color}`}
                   />
                 ))}
               </div>
             </div>
           );
         })}
+        {copiedColor && <div className="copy-notif">✅ {copiedColor} copied!</div>}
       </div>
     </main>
   );
