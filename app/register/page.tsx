@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import BackHome from '@/components/BackHome';
 
-// ✅ IMPORT FIREBASE DAN FUNGSI YANG DIPERLUKAN
-import { auth, db } from '@/lib/firebase'; // pastikan path ini sesuai dengan tempat kamu inisialisasi Firebase
+import { auth, db } from '@/lib/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 
@@ -20,18 +19,15 @@ export default function RegisterPage() {
     const pass = String(f.get('password') || '').trim();
 
     try {
-      // 1️⃣ Daftarkan user ke Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, `${user}@demo.com`, pass);
       const uid = userCredential.user.uid;
 
-      // 2️⃣ Simpan data tambahan ke Firestore
       await setDoc(doc(db, 'users', uid), {
         username: user,
         email: `${user}@demo.com`,
         createdAt: new Date().toISOString(),
       });
 
-      // ✅ Ganti showNotification dengan alert sementara
       alert('Account created successfully!');
       setTimeout(() => (window.location.href = '/login'), 1200);
     } catch (err: any) {
