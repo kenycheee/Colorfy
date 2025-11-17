@@ -32,14 +32,12 @@ const DEFAULT_VARS: Record<string, string> = {
   "c-purple": "#4b2449",
 };
 
-// safe root
 function getRootFor(el: HTMLElement | null) {
   if (typeof document === "undefined") return null;
   if (!el) return document.documentElement;
   return el.closest(".tv-wrap") || document.documentElement;
 }
 
-// to hex
 function toHex(val: string) {
   if (!val) return "#000000";
   if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(val)) return val.trim();
@@ -69,22 +67,18 @@ export default function Template() {
 
   const [user, setUser] = useState<any>(null);
 
-  // form states
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Template");
 
-  // firebase auth
   useEffect(() => {
     return onAuthStateChanged(auth, (u) => setUser(u));
   }, []);
 
-  // apply saved palette
   useEffect(() => {
     if (canvasRef.current) applySavedStyles(canvasRef.current);
   }, []);
 
-  // select element
   useEffect(() => {
     const root = canvasRef.current;
     if (!root) return;
@@ -109,7 +103,6 @@ export default function Template() {
     return () => root.removeEventListener("click", handler, true);
   }, [selectedEl]);
 
-  // read var
   const readVar = (varName: string) => {
     const dom = getRootFor(canvasRef.current);
     if (!dom) return DEFAULT_VARS[varName] ?? "#000000";
