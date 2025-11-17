@@ -12,14 +12,9 @@ import {
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FaHeart } from 'react-icons/fa';
-import '@/app/css/profile.css'; // style untuk profile + card (mengandung class yang sama seperti search.css)
 
-/**
- * ProfilePage
- * - menampilkan sidebar (profile info)
- * - tab Post (user's palettes) dan Like (liked palettes)
- * - setiap palette card memakai layout sama seperti Search (mockup-search + title/desc/creator + color-row)
- */
+import Modal from '@/components/Modal';
+import '@/app/css/profile.css';
 
 interface ColorTemplate {
   id: string;
@@ -38,7 +33,25 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<'post' | 'like'>('post');
   const router = useRouter();
 
-  // Ambil user + user's palettes
+  // ==========================
+  // 🔥 MODAL STATE
+  // ==========================
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPalette, setSelectedPalette] = useState<ColorTemplate | null>(null);
+
+  const openModal = (tpl: ColorTemplate) => {
+    setSelectedPalette(tpl);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setSelectedPalette(null);
+    setShowModal(false);
+  };
+
+  // ==========================
+  // Fetch user + user's palettes
+  // ==========================
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -47,18 +60,17 @@ export default function ProfilePage() {
       }
 
       try {
-        // ambil user doc
         const userRef = doc(db, 'users', user.uid);
         const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          setUserData(userSnap.data());
-        } else {
-          setUserData({ username: 'Anonymous User', email: user.email });
-        }
+        setUserData(
+          userSnap.exists()
+            ? userSnap.data()
+            : { username: 'Anonymous User', email: user.email }
+        );
 
-        // ambil palettes milik user (subcollection palleteList)
         const palleteRef = collection(userRef, 'palleteList');
         const palSnap = await getDocs(palleteRef);
+
         const userPalettes: ColorTemplate[] = palSnap.docs.map((d) => ({
           id: d.id,
           title: d.data().title || '',
@@ -66,6 +78,7 @@ export default function ProfilePage() {
           colors: d.data().colors || [],
           userId: user.uid,
         }));
+
         setTemplates(userPalettes);
       } catch (err) {
         console.error('Error fetching profile data:', err);
@@ -77,15 +90,22 @@ export default function ProfilePage() {
     return () => unsub();
   }, [router]);
 
-  // Ambil liked templates ketika tab 'like' aktif (fetch once on tab open)
+  // Fetch liked when tab active
   useEffect(() => {
     if (activeTab !== 'like') return;
 
     const fetchLiked = async () => {
       if (!auth.currentUser) return;
+
       try {
-        const likedRef = collection(db, 'users', auth.currentUser.uid, 'likedPalettes');
+        const likedRef = collection(
+          db,
+          'users',
+          auth.currentUser.uid,
+          'likedPalettes'
+        );
         const snap = await getDocs(likedRef);
+
         const liked: ColorTemplate[] = snap.docs.map((d) => ({
           id: d.id,
           title: d.data().title || '',
@@ -93,6 +113,7 @@ export default function ProfilePage() {
           colors: d.data().colors || [],
           userId: d.data().userId || '',
         }));
+
         setLikedTemplates(liked);
       } catch (err) {
         console.error('Error fetching liked templates:', err);
@@ -112,14 +133,15 @@ export default function ProfilePage() {
     }
   };
 
-  // unlike from profile (when viewing liked tab)
   const unlikeFromProfile = async (tplId: string) => {
     if (!auth.currentUser) {
       alert('Please login to modify likes.');
       return;
     }
     try {
-      await deleteDoc(doc(db, 'users', auth.currentUser.uid, 'likedPalettes', tplId));
+      await deleteDoc(
+        doc(db, 'users', auth.currentUser.uid, 'likedPalettes', tplId)
+      );
       setLikedTemplates((prev) => prev.filter((t) => t.id !== tplId));
     } catch (err) {
       console.error('Error unliking from profile:', err);
@@ -135,14 +157,19 @@ export default function ProfilePage() {
         <aside className="profile-sidebar glass-card">
           <div className="profile-avatar-large neon-border">
             <img
-              src={userData?.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}
+              src={
+                userData?.photoURL ||
+                'https://cdn-icons-png.flaticon.com/512/149/149071.png'
+              }
               alt="Profile"
             />
           </div>
 
-          <h2 className="profile-username">{userData?.username || 'Anonymous User'}</h2>
-          <p className="user-email">{userData?.email}</p>
+          <h2 className="profile-username">
+            {userData?.username || 'Anonymous User'}
+          </h2>
 
+          <p className="user-email">{userData?.email}</p>
           <p className="user-bio">{userData?.bio || 'No bio provided.'}</p>
 
           <div className="user-meta">
@@ -155,7 +182,10 @@ export default function ProfilePage() {
           </div>
 
           <div className="sidebar-actions">
-            <button className="btn-edit" onClick={() => router.push('/editprofile')}>
+            <button
+              className="btn-edit"
+              onClick={() => router.push('/editprofile')}
+            >
               Edit Profile
             </button>
 
@@ -180,6 +210,7 @@ export default function ProfilePage() {
             >
               Post
             </button>
+
             <button
               className={activeTab === 'like' ? 'active' : ''}
               onClick={() => setActiveTab('like')}
@@ -188,7 +219,7 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          {/* POST TAB (user's own palettes) */}
+          {/* POST TAB */}
           {activeTab === 'post' && (
             <div className="profile-templates">
               <h2 className="template-title-section">🎨 Your Templates</h2>
@@ -196,34 +227,51 @@ export default function ProfilePage() {
               <div className="template-grid">
                 {templates.length > 0 ? (
                   templates.map((tpl) => (
-                    <div key={tpl.id} className="template-card">
-                      {/* For user's own palettes we don't show like button in same way;
-                          but keep design consistent with Search */}
+                    <div
+                      key={tpl.id}
+                      className="template-card"
+                      onClick={() => openModal(tpl)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <div className="mockup-search">
-                        <p className="mockup-title">{tpl.title || 'Untitled Palette'}</p>
+                        <p className="mockup-title">
+                          {tpl.title || 'Untitled Palette'}
+                        </p>
                         {tpl.description && (
-                          <p className="mockup-description">{tpl.description}</p>
+                          <p className="mockup-description">
+                            {tpl.description}
+                          </p>
                         )}
-                        {/* Creator = you */}
-                        <p className="mockup-creator">By {userData?.username || 'You'}</p>
+
+                        <p className="mockup-creator">
+                          By {userData?.username || 'You'}
+                        </p>
+
                         <div
                           className="mockup-button-search"
                           style={{
-                            background: tpl.colors && tpl.colors.length > 1
-                              ? `linear-gradient(90deg, ${tpl.colors.join(',')})`
-                              : tpl.colors[0] || '#888',
+                            background:
+                              tpl.colors.length > 1
+                                ? `linear-gradient(90deg, ${tpl.colors.join(
+                                    ','
+                                  )})`
+                                : tpl.colors[0] || '#888',
                           }}
                         ></div>
                       </div>
 
                       <div className="color-row">
-                        {tpl.colors?.map((color, i) => (
+                        {tpl.colors.map((color, i) => (
                           <div
                             key={i}
-                            className={`color-box ${copiedColor === color ? 'copied' : ''}`}
+                            className={`color-box ${
+                              copiedColor === color ? 'copied' : ''
+                            }`}
                             style={{ background: color }}
-                            onClick={() => handleCopyColor(color)}
-                            title={`Click to Copy ${color}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCopyColor(color);
+                            }}
                           />
                         ))}
                       </div>
@@ -244,40 +292,62 @@ export default function ProfilePage() {
               <div className="template-grid">
                 {likedTemplates.length > 0 ? (
                   likedTemplates.map((tpl) => (
-                    <div key={tpl.id} className="template-card">
+                    <div
+                      key={tpl.id}
+                      className="template-card"
+                      onClick={() => openModal(tpl)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <button
                         className="like-btn liked"
-                        onClick={() => unlikeFromProfile(tpl.id)}
-                        title="Unlike"
-                        aria-label="Unlike"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          unlikeFromProfile(tpl.id);
+                        }}
                       >
                         <FaHeart color="#ff4b5c" />
                       </button>
 
                       <div className="mockup-search">
-                        <p className="mockup-title">{tpl.title || 'Untitled Palette'}</p>
+                        <p className="mockup-title">
+                          {tpl.title || 'Untitled Palette'}
+                        </p>
+
                         {tpl.description && (
-                          <p className="mockup-description">{tpl.description}</p>
+                          <p className="mockup-description">
+                            {tpl.description}
+                          </p>
                         )}
-                        <p className="mockup-creator">By {tpl.userId || 'Unknown'}</p>
+
+                        <p className="mockup-creator">
+                          By {tpl.userId || 'Unknown'}
+                        </p>
+
                         <div
                           className="mockup-button-search"
                           style={{
-                            background: tpl.colors && tpl.colors.length > 1
-                              ? `linear-gradient(90deg, ${tpl.colors.join(',')})`
-                              : tpl.colors[0] || '#888',
+                            background:
+                              tpl.colors.length > 1
+                                ? `linear-gradient(90deg, ${tpl.colors.join(
+                                    ','
+                                  )})`
+                                : tpl.colors[0] || '#888',
                           }}
                         ></div>
                       </div>
 
                       <div className="color-row">
-                        {tpl.colors?.map((color, i) => (
+                        {tpl.colors.map((color, i) => (
                           <div
                             key={i}
-                            className={`color-box ${copiedColor === color ? 'copied' : ''}`}
+                            className={`color-box ${
+                              copiedColor === color ? 'copied' : ''
+                            }`}
                             style={{ background: color }}
-                            onClick={() => handleCopyColor(color)}
-                            title={`Click to Copy ${color}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCopyColor(color);
+                            }}
                           />
                         ))}
                       </div>
@@ -290,10 +360,14 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* copy notif */}
-          {copiedColor && <div className="copy-notif">✅ {copiedColor} copied!</div>}
+          {copiedColor && (
+            <div className="copy-notif">✅ {copiedColor} copied!</div>
+          )}
         </section>
       </div>
+
+      {/* MODAL */}
+      <Modal open={showModal} onClose={closeModal} palette={selectedPalette} />
     </main>
   );
 }

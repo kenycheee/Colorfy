@@ -14,6 +14,7 @@ import {
 import { onAuthStateChanged } from 'firebase/auth';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 
+import Modal from '@/components/Modal';
 import '@/app/css/search.css';
 
 export default function SearchPage() {
@@ -23,6 +24,22 @@ export default function SearchPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [userCache, setUserCache] = useState<Record<string, string>>({});
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
+
+  // =============================
+  // 🔹 Modal State
+  // =============================
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPalette, setSelectedPalette] = useState<any | null>(null);
+
+  const openModal = (tpl: any) => {
+    setSelectedPalette(tpl);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedPalette(null);
+  };
 
   // ============================================================
   // 🔹 Ambil user login + realtime favorites
@@ -49,7 +66,7 @@ export default function SearchPage() {
   }, []);
 
   // ============================================================
-  // 🔹 Ambil hanya koleksi publik "palleteList"
+  // 🔹 Ambil koleksi publik "palleteList"
   // ============================================================
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'palleteList'), (snap) => {
@@ -119,7 +136,7 @@ export default function SearchPage() {
   };
 
   // ============================================================
-  // 🔍 Search Filter (TITLE ONLY)
+  // 🔍 Search (TITLE ONLY)
   // ============================================================
   const filtered = templates.filter((t) =>
     t.title?.toLowerCase().includes(query.toLowerCase())
@@ -157,10 +174,18 @@ export default function SearchPage() {
           const creatorName = userCache[tpl.userId] || 'Loading...';
 
           return (
-            <div key={paletteId} className="template-card">
+            <div
+              key={paletteId}
+              className="template-card"
+              onClick={() => openModal(tpl)}
+              style={{ cursor: 'pointer' }}
+            >
               <button
                 className="like-btn"
-                onClick={() => toggleLike(tpl)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleLike(tpl);
+                }}
                 title={isLiked ? 'Unlike' : 'Like'}
               >
                 {isLiked ? (
@@ -185,10 +210,11 @@ export default function SearchPage() {
               <div
                 className="mockup-button-search"
                 style={{
-                  background: tpl.colors && tpl.colors.length > 1
-                  ? `linear-gradient(90deg, ${tpl.colors.join(',')})`
-                  : tpl.colors[0] || '#888',
-                  }}
+                  background:
+                    tpl.colors && tpl.colors.length > 1
+                      ? `linear-gradient(90deg, ${tpl.colors.join(',')})`
+                      : tpl.colors?.[0] || '#888',
+                }}
               ></div>
 
               <div className="color-row">
@@ -196,19 +222,26 @@ export default function SearchPage() {
                   <div
                     key={i}
                     className={`color-box ${
-                              copiedColor === color ? 'copied' : ''
-                            }`}
-                            style={{ background: color }}
-                            onClick={() => handleCopyColor(color)}
-                            title={`Click to Copy ${color}`}
+                      copiedColor === color ? 'copied' : ''
+                    }`}
+                    style={{ background: color }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCopyColor(color);
+                    }}
+                    title={`Click to Copy ${color}`}
                   />
                 ))}
               </div>
             </div>
           );
         })}
+
         {copiedColor && <div className="copy-notif">✅ {copiedColor} copied!</div>}
       </div>
+
+      {/* ======================= MODAL ======================= */}
+      <Modal open={showModal} onClose={closeModal} palette={selectedPalette} />
     </main>
   );
 }
