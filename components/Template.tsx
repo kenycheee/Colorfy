@@ -126,12 +126,12 @@ export default function Template() {
 
   const writeVar = (varName: string, value: string) => {
     const dom = getRootFor(canvasRef.current);
-    if (!dom) return;
+    if (!(dom instanceof HTMLElement)) return;
 
     dom.style.setProperty(`--${varName}`, value);
 
     try {
-      saveStyleFor(dom as any, `--${varName}`, value);
+      saveStyleFor(dom, `--${varName}`, value);
     } catch {}
 
     pulseBar(varName);
