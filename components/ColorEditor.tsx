@@ -29,7 +29,6 @@ function normalizeHex(hex: string) {
   return hex;
 }
 
-// ambil root untuk CSS variable global
 function getRootFor(el: HTMLElement) {
   return (el.closest(".tv-wrap") as HTMLElement) || document.documentElement;
 }
@@ -46,7 +45,6 @@ export default function ColorEditor({ target, onClose }: Props) {
     borderColor: "#000000",
   });
 
-  // ambil warna awal (support data-edit-var)
   useEffect(() => {
     if (!target) return;
     const varName = target.dataset.editVar;
