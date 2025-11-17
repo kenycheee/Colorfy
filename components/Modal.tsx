@@ -5,7 +5,7 @@ import '../app/css/modal.css';
 interface ModalProps {
   open: boolean;
   onClose: () => void;
-  palette: any | null; // palette full object
+  palette: any | null;
 }
 
 export default function Modal({ open, onClose, palette }: ModalProps) {

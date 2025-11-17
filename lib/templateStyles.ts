@@ -1,8 +1,3 @@
-// Utilities for managing element styles with localStorage
-
-/**
- * Apply saved styles from localStorage to all editable elements
- */
 export function applySavedStyles(root: HTMLElement) {
   const raw = localStorage.getItem("goby:styles");
   if (!raw) return;
@@ -17,13 +12,10 @@ export function applySavedStyles(root: HTMLElement) {
       });
     }
   } catch {
-    // Ignore parse errors
+
   }
 }
 
-/**
- * Save a style property for an element into localStorage
- */
 export function saveStyleFor(el: HTMLElement, prop: string, value: string) {
   const id = el.dataset.editId!;
   const raw = localStorage.getItem("goby:styles");
@@ -32,9 +24,6 @@ export function saveStyleFor(el: HTMLElement, prop: string, value: string) {
   localStorage.setItem("goby:styles", JSON.stringify(dict));
 }
 
-/**
- * Apply a style property to a target element
- */
 export function applyToTarget(el: HTMLElement, prop: string, value: string) {
   switch (prop) {
     case "background":
@@ -49,16 +38,10 @@ export function applyToTarget(el: HTMLElement, prop: string, value: string) {
   }
 }
 
-/**
- * Normalize hex value (prepend '#' if missing)
- */
 export function normalizeHex(x: string) {
   return x.startsWith("#") ? x : `#${x}`;
 }
 
-/**
- * Convert rgb(a) string to hex
- */
 export function rgbToHex(rgb: string) {
   const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(rgb);
   if (!m) return "";

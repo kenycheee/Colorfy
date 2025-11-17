@@ -33,9 +33,6 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<'post' | 'like'>('post');
   const router = useRouter();
 
-  // ==========================
-  // 🔥 MODAL STATE
-  // ==========================
   const [showModal, setShowModal] = useState(false);
   const [selectedPalette, setSelectedPalette] = useState<ColorTemplate | null>(null);
 
@@ -49,9 +46,6 @@ export default function ProfilePage() {
     setShowModal(false);
   };
 
-  // ==========================
-  // Fetch user + user's palettes
-  // ==========================
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -90,7 +84,6 @@ export default function ProfilePage() {
     return () => unsub();
   }, [router]);
 
-  // Fetch liked when tab active
   useEffect(() => {
     if (activeTab !== 'like') return;
 

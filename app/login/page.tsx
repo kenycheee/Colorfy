@@ -18,7 +18,6 @@ export default function LoginPage() {
     const pass = String(f.get('password') || '').trim();
 
     try {
-      // Login ke Firebase Authentication
       await signInWithEmailAndPassword(auth, `${user}@demo.com`, pass);
 
       showNotification(`Welcome back, ${user}!`);

@@ -24,10 +24,6 @@ export default function SearchPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [userCache, setUserCache] = useState<Record<string, string>>({});
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
-
-  // =============================
-  // 🔹 Modal State
-  // =============================
   const [showModal, setShowModal] = useState(false);
   const [selectedPalette, setSelectedPalette] = useState<any | null>(null);
 
@@ -41,9 +37,6 @@ export default function SearchPage() {
     setSelectedPalette(null);
   };
 
-  // ============================================================
-  // 🔹 Ambil user login + realtime favorites
-  // ============================================================
   useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -65,9 +58,6 @@ export default function SearchPage() {
     return () => unsubAuth();
   }, []);
 
-  // ============================================================
-  // 🔹 Ambil koleksi publik "palleteList"
-  // ============================================================
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'palleteList'), (snap) => {
       const data = snap.docs.map((d) => ({
@@ -80,9 +70,6 @@ export default function SearchPage() {
     return () => unsub();
   }, []);
 
-  // ============================================================
-  // 🔹 Ambil nama creator (cache biar efisien)
-  // ============================================================
   useEffect(() => {
     const missingIds = [
       ...new Set(
@@ -106,15 +93,11 @@ export default function SearchPage() {
     });
   }, [templates]);
 
-  // ============================================================
-  // ❤️ Like / Unlike
-  // ============================================================
   const toggleLike = async (tpl: any) => {
     if (!userId) return alert('Please login first!');
 
     const paletteId = tpl.docId;
     const alreadyLiked = likedIds.includes(paletteId);
-
     const favRef = doc(db, 'users', userId, 'likedPalettes', paletteId);
 
     try {
@@ -135,9 +118,6 @@ export default function SearchPage() {
     }
   };
 
-  // ============================================================
-  // 🔍 Search (TITLE ONLY)
-  // ============================================================
   const filtered = templates.filter((t) =>
     t.title?.toLowerCase().includes(query.toLowerCase())
   );
@@ -152,9 +132,6 @@ export default function SearchPage() {
     }
   };
 
-  // ============================================================
-  // UI
-  // ============================================================
   return (
     <main className="search-page">
       <div className="search-container">

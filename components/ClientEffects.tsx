@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 
 export default function ClientEffects() {
   useEffect(() => {
-    // Smooth scrolling untuk anchor di page ini
     const anchors = document.querySelectorAll('a[href^="#"]');
     const onClick = (e: Event) => {
       const a = e.currentTarget as HTMLAnchorElement;
@@ -16,7 +15,6 @@ export default function ClientEffects() {
     };
     anchors.forEach(a => a.addEventListener('click', onClick));
 
-    // Intersection Observer
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
@@ -33,7 +31,6 @@ export default function ClientEffects() {
       observer.observe(el);
     });
 
-    // Button click particles
     const buttons = document.querySelectorAll('.btn-primary, .btn-secondary, .btn-white, .cta-button');
     const onButtonClick = (e: Event) => {
       const ev = e as MouseEvent;
@@ -41,7 +38,6 @@ export default function ClientEffects() {
     };
     buttons.forEach(b => b.addEventListener('click', onButtonClick));
 
-    // Color swatches ripple + copy
     const swatches = document.querySelectorAll('.color-swatch');
     const onSwatchClick = function (this: HTMLElement) {
       const ripple = document.createElement('div');
@@ -68,7 +64,6 @@ export default function ClientEffects() {
     };
     swatches.forEach(s => s.addEventListener('click', onSwatchClick as any));
 
-    // Inject keyframes for notification/ripple (sama seperti script lama)
     const style = document.createElement('style');
     style.textContent = `
       @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }

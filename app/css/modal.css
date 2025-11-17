@@ -1,4 +1,3 @@
-/* Overlay gelap */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -9,7 +8,6 @@
   z-index: 200;
 }
 
-/* Kotak modal */
 .modal-box {
   background: #050816;
   padding: 32px;
@@ -18,10 +16,9 @@
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
   animation: popup 0.25s ease;
   width: 420px;
-  max-width: 90vw;     /* biar responsif */
+  max-width: 90vw;
 }
 
-/* Animasi muncul */
 @keyframes popup {
   from {
     transform: scale(0.9);
@@ -34,8 +31,8 @@
 }
 
 .tv {
-  width: 360px;       /* dari 260 → lebih besar */
-  height: 220px;      /* dari 160 → lebih tinggi */
+  width: 360px;
+  height: 220px;
   background: #1A1F3A;
   padding: 16px;
   border-radius: 20px;
