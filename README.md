@@ -1,29 +1,29 @@
-# 🎨 Next.js Color Palette App
+# Colorfy
 
 A modern and responsive **color palette generator** built using **Next.js**, **Firebase Authentication**, and **Firestore**.  
 Users can generate random palettes, customize colors, and securely store their collections in the cloud.
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔄 Randomize / Reset Colors  
+### Randomize / Reset Colors  
 Generate a fully random palette or restore the default palette with a single click.
 
-### 🔐 Firebase Authentication  
+### Firebase Authentication  
 Only logged-in users can save, edit, or delete palettes.
 
-### ☁️ Firestore Storage  
+### Firestore Storage  
 Palettes are stored in:
 - `users/{userId}/palleteList` — user-specific collections  
 - `palleteList` — global reference collection  
 
-### 📱 Fully Responsive UI  
+### Fully Responsive UI  
 Built to look clean and consistent across **mobile**, **tablet**, and **desktop**.
 
 ---
 
-## 🧱 Tech Stack
+## Tech Stack
 
 | Category | Tools |
 |----------|----------------|
@@ -37,7 +37,7 @@ Built to look clean and consistent across **mobile**, **tablet**, and **desktop*
 ---
 
 
-## 🛠 Getting Started
+## Getting Started
 
 ### 1️⃣ Install Dependencies
 
